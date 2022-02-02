@@ -1,0 +1,25 @@
+name: "Mondoo Kubernetes"
+description: "Validate your Kubernetes deployment using Mondoo"
+author: "Christoph Hartmann"
+branding:
+  icon: "alert-octagon"
+  color: "green"
+inputs:
+  command:
+    description: "Which Mondoo command to run, defaults to scan"
+    default: scan
+  policy-bundle:
+    description: "path to test file"
+  incognito:
+    description: "Configuration if the results should be local only"
+    default: true
+runs:
+  using: "docker"
+  image: "docker://mondoolabs/mondoo:latest"
+  args:
+    - scan
+    - -t
+    - k8s
+    - --incognito
+    - ${{ inputs.incognito }}
+    - ${{ policy-bundle }}
