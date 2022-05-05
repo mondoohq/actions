@@ -2,11 +2,14 @@ name: Mondoo
 author: Mondoo
 description: Use Mondoo Client to scan repository contents
 inputs:
+  service_account_credentials:
+    description: The Mondoo service account credentials. These should be stored in a GitHub secret and not set in the workflow configuration file directly.
+    required: true
   path:
     description: The file to scan with Mondoo
     required: true
   scan_type:
-    description: The scan type (k8s, tf)
+    description: The scan type to perform (k8s or tf)
     required: true
 runs:
   using: 'docker'
