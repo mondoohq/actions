@@ -1,0 +1,16 @@
+name: Mondoo
+author: Mondoo
+description: Use Mondoo Client to scan repository contents
+inputs:
+  path:
+    description: The file to scan with Mondoo
+    required: true
+  scan_type:
+    description: The scan type (k8s, tf)
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+branding:
+  icon: 'shield'  
+  color: 'purple'
