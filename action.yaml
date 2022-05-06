@@ -1,4 +1,4 @@
-name: Mondoo
+name: scan
 author: Mondoo
 description: Use Mondoo Client to scan repository contents
 inputs:
