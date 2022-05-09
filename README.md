@@ -27,13 +27,18 @@ The Mondoo service account credentials. These should be stored in a GitHub secre
 
 The type of Mondoo scan to perform:
 
+- `docker_image_from_dockerfile` for scanning of Docker images from a Dockerfile. Note: This will build and then scan the image which make be a lengthy process.
+- `docker_image` for scanning of Docker images from a Docker registry or from earlier GitHub actions steps.
 - `k8s` for Kubernetes Manifest scanning.
 - `tf` for Terraform configuration file scanning.
-- `docker` for scanning of Docker containers from a Dockerfile. Note: This will build and then scan the container which make be a lengthy process.
 
 **path**
 
-The file to scan with Mondoo or the path to the Dockerfile if `scan_type` is set to `docker`. ex: `nginx.yml` or `Dockerfile`
+The file to scan with Mondoo or the path to the Dockerfile if `scan_type` is set to `docker_image_from_dockerfile`. ex: `nginx.yml` or `Dockerfile`
+
+**docker_image_name**
+
+The container image name to scan when `scan_type` is set to `docker_image`. ex: `nginx:22.04`
 
 ## Examples Workflows
 
@@ -57,8 +62,8 @@ jobs:
         uses: mondoohq/actions@main
         with:
           service_account_credentials: ${{ secrets.MONDOO_AGENT_ACCOUNT }}
-          scan_type: 'k8s'
-          path: 'nginx.yml'
+          scan_type: k8s
+          path: nginx.yml
 ```
 
 Build a Docker container from a Dockerfile and scan the container:
@@ -81,6 +86,30 @@ jobs:
         uses: mondoohq/actions@main
         with:
           service_account_credentials: ${{ secrets.MONDOO_AGENT_ACCOUNT }}
-          scan_type: "docker"
-          path: "Dockerfile"
+          scan_type: docker_image_from_dockerfile
+          path: Dockerfile
+```
+
+Scan a docker container from a previous built image or image in a registry:
+
+```yaml
+name: mondoo-scan
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Scan with Mondoo
+        uses: mondoohq/actions@main
+        with:
+          service_account_credentials: ${{ secrets.MONDOO_AGENT_ACCOUNT }}
+          scan_type: docker_image
+          docker_image_name: ubuntu:22.04
 ```
