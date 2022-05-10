@@ -1,19 +1,71 @@
-name: scan
+name: Mondoo Scan
 author: Mondoo
 description: Use Mondoo Client to scan repository contents
 inputs:
   service_account_credentials:
     description: The Mondoo service account credentials. These should be stored in a GitHub secret and not set in the workflow configuration file directly.
     required: true
+  docker_image_name:
+    description: The Docker image to scan with Mondoo. This can be an image in DockerHub or a SHA from an earlier GitHub Action build step.
+    required: false
   path:
     description: The file to scan with Mondoo
-    required: true
+    required: false
   scan_type:
-    description: The scan type to perform (k8s or tf)
+    description: The scan type to perform (docker_image, docker_image_from_dockerfile, k8s, or tf)
     required: true
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: "composite"
+  steps:
+    - name: Validate Inputs
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.scan_type }}" ]; then
+          echo "The 'scan_type' input must be set for the Mondoo GitHub Action to run." >&2
+          exit 1
+        fi
+        if [[ ! "${{ inputs.scan_type }}" =~ ^docker_image$|^docker_image_from_dockerfile$|^k8s$|^tf$ ]]; then
+          echo "Valid 'scan_type' input values are 'docker_image', 'docker_image_from_dockerfile', 'k8s', or 'tf'. Cannot continue."
+          exit 1
+        fi
+        if [[ "${{ inputs.scan_type }}" == "docker_image" ]] && [[ -z "${{ inputs.docker_image_name }}" ]]; then
+          echo "When setting the 'scan_type' to 'docker_image' you must also specify the 'docker_image_name' input value. Cannot continue."
+          exit 1
+        fi
+        if [[ "${{ inputs.scan_type }}" == "docker_image_from_dockerfile" ]] && [[ -z "${{ inputs.path }}" ]]; then
+          echo "When setting the 'scan_type' to 'docker_image_from_dockerfile' you must also specify the 'path' input value. Cannot continue."
+          exit 1
+        fi
+    - name: Install Mondoo Client
+      shell: bash
+      run: |
+          echo Installing Mondoo Client...
+          echo ${{ inputs.service_account_credentials }} | base64 -d > mondoo.json
+          curl -sSL https://mondoo.com/install.sh | bash
+    - name: Build the Docker Container
+      shell: bash
+      run: |
+        echo Building mondoo-test-image from Dockerfile...
+        docker build . --file ${{ inputs.path }} --tag mondoo-test-image
+      if: inputs.scan_type == 'docker_image_from_dockerfile'
+    - name: Scan docker container
+      shell: bash
+      run: |
+        CONTAINER_IMAGE="${{ inputs.docker_image_name }}"
+        if [ -z "$CONTAINER_IMAGE" ]; then
+          CONTAINER_IMAGE=mondoo-test-image
+        fi
+
+        echo Scanning Docker container ${CONTAINER_IMAGE} with Mondoo Client...
+        mondoo scan -t docker://${CONTAINER_IMAGE} --config mondoo.json
+      if: inputs.scan_type == 'docker_image_from_dockerfile' || inputs.scan_type == 'docker_image'
+    - name: Scan configs
+      shell: bash
+      run: |
+        echo Scanning ${{ inputs.path }} with Mondoo Client...
+        mondoo scan -t ${{ inputs.scan_type }} --path ${{ inputs.path }} --config mondoo.json
+      if: inputs.scan_type != 'docker_image_from_dockerfile' && inputs.scan_type != 'docker_image'
+          
 branding:
-  icon: 'shield'  
+  icon: 'shield'
   color: 'purple'
