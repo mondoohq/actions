@@ -57,13 +57,13 @@ runs:
         fi
 
         echo Scanning Docker container ${CONTAINER_IMAGE} with Mondoo Client...
-        mondoo scan -t docker://${CONTAINER_IMAGE} --config mondoo.json
+        mondoo scan --detect-cicd -t docker://${CONTAINER_IMAGE} --config mondoo.json
       if: inputs.scan_type == 'docker_image_from_dockerfile' || inputs.scan_type == 'docker_image'
     - name: Scan configs
       shell: bash
       run: |
         echo Scanning ${{ inputs.path }} with Mondoo Client...
-        mondoo scan -t ${{ inputs.scan_type }} --path ${{ inputs.path }} --config mondoo.json
+        mondoo scan --detect-cicd -t ${{ inputs.scan_type }} --path ${{ inputs.path }} --config mondoo.json
       if: inputs.scan_type != 'docker_image_from_dockerfile' && inputs.scan_type != 'docker_image'
           
 branding:
