@@ -14,6 +14,14 @@ inputs:
   scan_type:
     description: The scan type to perform (docker_image, docker_image_from_dockerfile, k8s, or tf)
     required: true
+  score_threshold:
+    required: false
+    description: The score threshold for scans. If any score falls below the threshold, exit 1 (default 0).
+    default: '0'
+  output_format:
+    description: Set the output format (compact|full|csv|json|junit|yaml). Default compact
+    required: false
+    default: 'compact'
 runs:
   using: "composite"
   steps:
@@ -34,6 +42,14 @@ runs:
         fi
         if [[ "${{ inputs.scan_type }}" == "docker_image_from_dockerfile" ]] && [[ -z "${{ inputs.path }}" ]]; then
           echo "When setting the 'scan_type' to 'docker_image_from_dockerfile' you must also specify the 'path' input value. Cannot continue."
+          exit 1
+        fi
+        if [[ ! "${{ inputs.output_format }}" =~ ^compact$|^full$|^csv$|^json$|^junit$|^yaml$ ]]; then
+          echo "Valid 'output_format' input values are 'compact', 'full', 'csv', 'json', 'junit', or 'yaml'. Cannot continue."
+          exit 1
+        fi
+        if [[ ! "${{ inputs.score_threshold }}" =~ ^([0-9]{,2}|100)$ ]]; then
+          echo "Valid 'score_threshold' input values '0-100'. Cannot continue."
           exit 1
         fi
     - name: Install Mondoo Client
@@ -57,13 +73,13 @@ runs:
         fi
 
         echo Scanning Docker container ${CONTAINER_IMAGE} with Mondoo Client...
-        mondoo scan --detect-cicd -t docker://${CONTAINER_IMAGE} --config mondoo.json
+        mondoo scan --detect-cicd -t docker://${CONTAINER_IMAGE} --config mondoo.json --score-threshold ${{ inputs.score_threshold }} --output ${{ inputs.output_format }}
       if: inputs.scan_type == 'docker_image_from_dockerfile' || inputs.scan_type == 'docker_image'
     - name: Scan configs
       shell: bash
       run: |
         echo Scanning ${{ inputs.path }} with Mondoo Client...
-        mondoo scan --detect-cicd -t ${{ inputs.scan_type }} --path ${{ inputs.path }} --config mondoo.json
+        mondoo scan --detect-cicd -t ${{ inputs.scan_type }} --path ${{ inputs.path }} --config mondoo.json --score-threshold ${{ inputs.score_threshold }} --output ${{ inputs.output_format }}
       if: inputs.scan_type != 'docker_image_from_dockerfile' && inputs.scan_type != 'docker_image'
           
 branding:
