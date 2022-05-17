@@ -6,7 +6,7 @@ With the Mondoo [GitHub Action](https://github.com/features/actions) you can sca
 
 To fetch polices and send scan results to the Mondoo Platform, configure a Mondoo service account in your GitHub repository. Store this account securely using a [GitHub Actions Secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
 
-In the Mondoo console, go to Settings -> Service Accounts and click Add Acccount:
+In the Mondoo console, go to Settings -> Service Accounts and click Add Account:
 ![Service Accounts Page](/assets/service_account.png)
 
 In the left menu, select Download Credentials, check Base64-encoded, click Generate New Credentials, and copy the generated credentials:
@@ -39,6 +39,14 @@ The file to scan with Mondoo or, if `scan_type` is set to `docker_image_from_doc
 **docker_image_name**
 
 The container image name to scan when `scan_type` is set to `docker_image`. ex: `nginx:22.04`
+
+**score_threshold**
+
+The score threshold for scans. Value can be any number from `0-100`. If any score falls below the threshold, exit 1. Default value is `0`.
+
+**output_format**
+
+Set the output format (`compact`|`full`|`csv`|`json`|`junit`|`yaml`). Default `compact`.
 
 ## Examples Workflows
 
@@ -112,4 +120,30 @@ jobs:
           service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
           scan_type: docker_image
           docker_image_name: ubuntu:22.04
+```
+
+Build a Docker container from a Dockerfile, scan the container, and configure `output_format` and `score_threshold`:
+
+```yaml
+name: mondoo-scan
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Scan with Mondoo
+        uses: mondoohq/actions@main
+        with:
+          service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
+          scan_type: docker_image_from_dockerfile
+          path: Dockerfile
+          output_format: json
+          score_threshold: 80
 ```
