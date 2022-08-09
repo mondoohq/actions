@@ -48,6 +48,10 @@ The score threshold for scans. Value can be any number from `0-100`. If any scor
 
 Set the output format (`compact`|`full`|`csv`|`json`|`junit`|`yaml`). Default `compact`.
 
+**extra_args**
+
+Allows specify extra command-line arguments for the Mondoo scan command.
+
 ## Examples Workflows
 
 Simple scan of nginx.yml Kubernetes manifest:
