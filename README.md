@@ -6,10 +6,14 @@ With the Mondoo [GitHub Action](https://github.com/features/actions) you can sca
 
 To fetch polices and send scan results to the Mondoo Platform, configure a Mondoo service account in your GitHub repository. Store this account securely using a [GitHub Actions Secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
 
-In the Mondoo console, go to Settings -> Service Accounts and click Add Account:
-![Service Accounts Page](/assets/service_account.png)
+In the Mondoo console, go to Integrations and click Add Another Integration:
+![Add Another Integration](/assets/add_integration.png)
 
-In the left menu, select Download Credentials, check Base64-encoded, click Generate New Credentials, and copy the generated credentials:
+Scroll to the Supply Chain section and click Generate Long-Lived Credentials.
+
+![Supply Chain Section](/assets/supply_chain.png)
+
+Check the Base64-encoded checkbox, click Generate New Credentials, and copy the generated credentials:
 ![Generate Credentials](/assets/credentials.png)
 
 In your GitHub repo, go to Settings -> Secrets -> Actions and click New repository secret. Create a new secret named "MONDOO_CLIENT_ACCOUNT" with the contents you copied from the Mondoo Console:
