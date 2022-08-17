@@ -6,10 +6,10 @@ inputs:
     description: The Mondoo service account credentials. These should be stored in a GitHub secret and not set in the workflow configuration file directly.
     required: true
   docker_image_name:
-    description: The Docker image to scan with Mondoo. This can be an image in DockerHub or a SHA from an earlier GitHub Action build step.
+    description: The Docker image to scan with Mondoo Client. This can be an image in DockerHub or a SHA from an earlier GitHub Action build step.
     required: false
   path:
-    description: The file to scan with Mondoo
+    description: The file to scan with Mondoo Client
     required: false
   scan_type:
     description: The scan type to perform (docker_image, docker_image_from_dockerfile, k8s, or terraform)
@@ -23,7 +23,7 @@ inputs:
     required: false
     default: 'compact'
   extra_args:
-    description: Specify extra Mondoo scan arguments
+    description: Specify extra Mondoo Client scan arguments
     required: false
     default: ''
 runs:
