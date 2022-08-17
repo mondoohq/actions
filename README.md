@@ -28,7 +28,7 @@ The Mondoo service account credentials. Store these in a GitHub secret. Do not s
 The type of Mondoo scan to perform:
 
 - `k8s` for Kubernetes manifest scanning.
-- `tf` for Terraform configuration file scanning.
+- `terraform` for Terraform configuration file scanning.
 - `docker_image` for scanning of Docker images from a Docker registry or from earlier GitHub actions steps.
 - `docker_image_from_dockerfile` for scanning of Docker images from a Dockerfile. Note: This will build and then scan the image which make be a lengthy process.
 
@@ -76,6 +76,30 @@ jobs:
           service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
           scan_type: k8s
           path: nginx.yml
+```
+
+Simple scan of Terraform files:
+
+```yaml
+name: mondoo-scan
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Scan with Mondoo
+        uses: mondoohq/actions@main
+        with:
+          service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
+          scan_type: terraform
+          path: '*.tf'
 ```
 
 Build a Docker container from a Dockerfile and scan the container:
