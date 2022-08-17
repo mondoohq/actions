@@ -12,7 +12,7 @@ inputs:
     description: The file to scan with Mondoo
     required: false
   scan_type:
-    description: The scan type to perform (docker_image, docker_image_from_dockerfile, k8s, or tf)
+    description: The scan type to perform (docker_image, docker_image_from_dockerfile, k8s, or terraform)
     required: true
   score_threshold:
     required: false
@@ -36,8 +36,8 @@ runs:
           echo "The 'scan_type' input must be set for the Mondoo GitHub Action to run." >&2
           exit 1
         fi
-        if [[ ! "${{ inputs.scan_type }}" =~ ^docker_image$|^docker_image_from_dockerfile$|^k8s$|^tf$ ]]; then
-          echo "Valid 'scan_type' input values are 'docker_image', 'docker_image_from_dockerfile', 'k8s', or 'tf'. Cannot continue."
+        if [[ ! "${{ inputs.scan_type }}" =~ ^docker_image$|^docker_image_from_dockerfile$|^k8s$|^terraform$ ]]; then
+          echo "Valid 'scan_type' input values are 'docker_image', 'docker_image_from_dockerfile', 'k8s', or 'terraform'. Cannot continue."
           exit 1
         fi
         if [[ "${{ inputs.scan_type }}" == "docker_image" ]] && [[ -z "${{ inputs.docker_image_name }}" ]]; then
@@ -77,13 +77,13 @@ runs:
         fi
 
         echo Scanning Docker container ${CONTAINER_IMAGE} with Mondoo Client...
-        mondoo scan --detect-cicd -t docker://${CONTAINER_IMAGE} --config mondoo.json --score-threshold ${{ inputs.score_threshold }} --output ${{ inputs.output_format }} ${{ inputs.extra_args }}
+        mondoo scan --detect-cicd docker://${CONTAINER_IMAGE} --config mondoo.json --score-threshold ${{ inputs.score_threshold }} --output ${{ inputs.output_format }} ${{ inputs.extra_args }}
       if: inputs.scan_type == 'docker_image_from_dockerfile' || inputs.scan_type == 'docker_image'
     - name: Scan configs
       shell: bash
       run: |
         echo Scanning ${{ inputs.path }} with Mondoo Client...
-        mondoo scan --detect-cicd -t ${{ inputs.scan_type }} --path ${{ inputs.path }} --config mondoo.json --score-threshold ${{ inputs.score_threshold }} --output ${{ inputs.output_format }} ${{ inputs.extra_args }}
+        mondoo scan --detect-cicd ${{ inputs.scan_type }} --path ${{ inputs.path }} --config mondoo.json --score-threshold ${{ inputs.score_threshold }} --output ${{ inputs.output_format }} ${{ inputs.extra_args }}
       if: inputs.scan_type != 'docker_image_from_dockerfile' && inputs.scan_type != 'docker_image'
           
 branding:
