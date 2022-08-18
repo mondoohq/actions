@@ -83,9 +83,8 @@ runs:
       shell: bash
       run: |
         echo Scanning ${{ inputs.path }} with Mondoo Client...
-        mondoo scan --detect-cicd ${{ inputs.scan_type }} --path ${{ inputs.path }} --config mondoo.json --score-threshold ${{ inputs.score_threshold }} --output ${{ inputs.output_format }} ${{ inputs.extra_args }}
+        mondoo scan --detect-cicd ${{ inputs.scan_type }} ${{ inputs.path }} --config mondoo.json --score-threshold ${{ inputs.score_threshold }} --output ${{ inputs.output_format }} ${{ inputs.extra_args }}
       if: inputs.scan_type != 'docker_image_from_dockerfile' && inputs.scan_type != 'docker_image'
-          
 branding:
   icon: 'shield'
   color: 'purple'
