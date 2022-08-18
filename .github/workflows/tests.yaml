@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Scan k8s manifest
-        uses: ./action.yaml
+        uses: ./
         with:
           service_account_credentials: ${{ secrets.MONDOO_SECRET }}
           scan_type: k8s
