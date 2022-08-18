@@ -49,3 +49,16 @@ jobs:
           service_account_credentials: ${{ secrets.MONDOO_SECRET }}
           scan_type: docker_image
           docker_image_name: ubuntu:22.04
+  
+  terraform-tests:
+    runs-on: ubuntu-latest
+    name: Test Terraform scanning
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Scan Terraform 
+        uses: ./
+        with:
+          service_account_credentials: ${{ secrets.MONDOO_SECRET }}
+          scan_type: terraform
+          path: ./.github/test_files/tf
