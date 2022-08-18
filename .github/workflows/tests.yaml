@@ -1,0 +1,25 @@
+
+name: Tests
+on:
+  pull_request:
+  push:
+    paths:
+      - "action.yaml"
+      - ".github/test_files/**"
+    branches:
+      - "main"
+    tags: ["v*.*.*"]
+
+jobs:
+  k8s-manifest-tests:
+    runs-on: ubuntu-latest
+    name: Test k8s manifest scanning
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Scan k8s manifest
+        uses: ./action.yaml
+        with:
+          service_account_credentials: ${{ secrets.MONDOO_SECRET }}
+          scan_type: k8s
+          path: ./.github/test_files/k8s-manifest.yaml
