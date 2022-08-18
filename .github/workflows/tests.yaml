@@ -20,7 +20,7 @@ jobs:
       - name: Scan k8s manifest
         uses: ./
         with:
-          service_account_credentials: ${{ secrets.MONDOO_SECRET }}
+          service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
           scan_type: k8s
           path: ./.github/test_files/k8s-manifest.yaml
 
@@ -33,7 +33,7 @@ jobs:
       - name: Scan Docker image from a Dockerfile
         uses: ./
         with:
-          service_account_credentials: ${{ secrets.MONDOO_SECRET }}
+          service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
           scan_type: docker_image_from_dockerfile
           path: ./.github/test_files/Dockerfile
 
@@ -46,7 +46,7 @@ jobs:
       - name: Scan Docker image 
         uses: ./
         with:
-          service_account_credentials: ${{ secrets.MONDOO_SECRET }}
+          service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
           scan_type: docker_image
           docker_image_name: ubuntu:22.04
   
@@ -59,6 +59,6 @@ jobs:
       - name: Scan Terraform 
         uses: ./
         with:
-          service_account_credentials: ${{ secrets.MONDOO_SECRET }}
+          service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
           scan_type: terraform
           path: ./.github/test_files/tf
