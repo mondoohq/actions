@@ -77,7 +77,7 @@ runs:
         fi
 
         echo Scanning Docker container ${CONTAINER_IMAGE} with Mondoo Client...
-        mondoo scan --detect-cicd docker://${CONTAINER_IMAGE} --config mondoo.json --score-threshold ${{ inputs.score_threshold }} --output ${{ inputs.output_format }} ${{ inputs.extra_args }}
+        mondoo scan docker image ${CONTAINER_IMAGE} --detect-cicd --config mondoo.json --score-threshold ${{ inputs.score_threshold }} --output ${{ inputs.output_format }} ${{ inputs.extra_args }}
       if: inputs.scan_type == 'docker_image_from_dockerfile' || inputs.scan_type == 'docker_image'
     - name: Scan configs
       shell: bash
