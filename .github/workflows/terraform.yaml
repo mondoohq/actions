@@ -1,0 +1,25 @@
+
+name: Terraform Scanning
+on:
+  pull_request:
+  push:
+    paths:
+      - "action.yaml"
+      - "terraform/*"
+      - ".github/test_files/**"
+    branches:
+      - "main"
+    tags: ["v*.*.*"]
+
+jobs:
+  terraform-tests:
+    runs-on: ubuntu-latest
+    name: Test Terraform scanning
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Scan Terraform 
+        uses: ./terraform
+        with:
+          service-account-credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
+          path: ./.github/test_files/tf

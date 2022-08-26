@@ -1,10 +1,15 @@
-name: Setup Mondoo Action
-description: Installs Mondoo Client into a workflow
+name: "Mondoo Docker Image Action"
+description: "Scan Docker images for vulnerabilities and misconfigurations with Mondoo. This action supports both local images and images within remote registries."
+branding:
+  icon: 'shield'
+  color: 'purple'
 inputs:
   args:
-    description: >-
-      Additional arguments to pass to Mondoo Client.
+    description: 'Additional arguments to pass to Mondoo Client'
     required: false
+  image:
+    description: Docker image ID or name:tag to scan. 
+    required: true
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
@@ -15,6 +20,11 @@ inputs:
       Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
     default: compact
     required: false
+  score-threshold:
+    description: >-
+      Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
+    default: '0'
+    required: false
   service-account-credentials:
     description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
     required: true
@@ -22,18 +32,20 @@ runs:
   using: "composite"
   steps:
     - name: Install Mondoo Client
+      shell: bash
       run: |
           echo Installing Mondoo Client...
           echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
           curl -sSL https://mondoo.com/install.sh | bash
-      shell: bash
     - name: Mondoo status
-      run: mondoo status --config mondoo.json
       shell: bash
-    - name: Run Mondoo
+      run: mondoo status --config mondoo.json
+    - name: Run mondoo scan docker image
       shell: bash
       run: >
-        mondoo ${{ inputs.args }}
+        mondoo scan docker image ${{ inputs.image }}
         --output ${{ inputs.output }}
+        --score-threshold ${{ inputs.score-threshold }}
         --log-level ${{ inputs.log-level }}
+        ${{ inputs.args }}
         --config mondoo.json

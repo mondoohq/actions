@@ -1,5 +1,8 @@
-name: Setup Mondoo Action
-description: Installs Mondoo Client into a workflow
+name: "Mondoo Kubernetes Manifest Action"
+description: "Scan Kubernetes manifests for security misconfigurations with Mondoo"
+branding:
+  icon: 'shield'
+  color: 'purple'
 inputs:
   args:
     description: >-
@@ -15,6 +18,14 @@ inputs:
       Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
     default: compact
     required: false
+  path:
+    description: Path to the Kubernetes manifest file.
+    required: true
+  score-threshold:
+    description: >-
+      Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
+    default: '0'
+    required: false
   service-account-credentials:
     description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
     required: true
@@ -22,18 +33,20 @@ runs:
   using: "composite"
   steps:
     - name: Install Mondoo Client
+      shell: bash
       run: |
           echo Installing Mondoo Client...
           echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
           curl -sSL https://mondoo.com/install.sh | bash
-      shell: bash
     - name: Mondoo status
-      run: mondoo status --config mondoo.json
       shell: bash
-    - name: Run Mondoo
+      run: mondoo status --config mondoo.json
+    - name: Run mondoo scan ${{ inputs.asset-type }}
       shell: bash
       run: >
-        mondoo ${{ inputs.args }}
-        --output ${{ inputs.output }}
+        mondoo scan k8s ${{ inputs.path }}
         --log-level ${{ inputs.log-level }}
+        --output ${{ inputs.output }}
+        --score-threshold ${{ inputs.score-threshold }}
+        ${{ inputs.args }}
         --config mondoo.json

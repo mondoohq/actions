@@ -1,181 +1,140 @@
 # Mondoo GitHub Action
+A set of GitHub Action for using Mondoo to check for vulnerabilities and misconfigurations in your GitHub projects. Actions have been organized into different asset types that Mondoo supports.  We currently support the following asset types:
 
-With the Mondoo [GitHub Action](https://github.com/features/actions) you can scan Kubernetes manifests and Terraform configuration files for common security misconfigurations. These results are available in the GitHub Actions UI as well as the Mondoo console.
+- [AWS](aws) - Scan AWS accounts for misconfigurations as a post-provisioning step in your pipeline.
+- [Docker Image](docker-image) - Scan Docker images vulnerabilities and misconfigurations before pushing to a container registry.
+- [Kubernetes](k8s) - Scan Kubernetes Clusters post-deploy for continuous auditing and compliance of the cluster.
+- [Kubernetes Manifest](k8s-manifest) - Scan Kubernetes manifests for misconfigurations before applying changes to the cluster.
+- [Policy](policy) - Publish Mondoo policies to Mondoo Platform using GitHub Actions.
+- [Setup](setup) - Install and configure Mondoo into any existing GitHub Action workflow.
+- [Terraform](terraform) - Scan HashiCorp Terraform code for security misconfigurations.
 
-## Securely Store Credentials
+## Service Accounts
 
-To fetch polices and send scan results to the Mondoo Platform, configure a Mondoo service account in your GitHub repository. Store this account securely using a [GitHub Actions Secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
+All Mondoo GitHub Actions require a [service account](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) to authenticate with Mondoo Platform and run policies enabled for your assets in the Policy Hub.
 
-In the Mondoo console, go to Integrations and click Add Another Integration:
-![Add Another Integration](/assets/add_integration.png)
+### Create Service Account 
 
-Scroll to the Supply Chain section and click Generate Long-Lived Credentials.
+To create a service account on Mondoo Platform:
 
-![Supply Chain Section](/assets/supply_chain.png)
+1. Log in to [Mondoo Platform](https://console.mondoo.com)
+2. Select the Space you want to integrate with your repository.
+3. Click on **Settings** and then **Service Accounts**.
+4. Click **ADD ACCOUNT**.
+5. Select the **Base64-encoded** checkbox, and then click on the **GENERATE NEW CREDENTIALS** button.
+6. Copy the base64 encoded credentials and then move on to the next section.
 
-Check the Base64-encoded checkbox, click Generate New Credentials, and copy the generated credentials:
-![Generate Credentials](/assets/credentials.png)
+### Add new GitHub Actions Secrets 
 
-In your GitHub repo, go to Settings -> Secrets -> Actions and click New repository secret. Create a new secret named "MONDOO_CLIENT_ACCOUNT" with the contents you copied from the Mondoo Console:
-![Generate Credentials](/assets/secret.png)
-
-## Workflow Configuration Options
-
-The Mondoo GitHub Action has three required `with` values that must be set in your workflow configuration file:
-
-**service_account_credentials**
-
-The Mondoo service account credentials. Store these in a GitHub secret. Do not set them directly in the workflow configuration file. Once a secret is set up (as shown above) you can reference that secret in your workflow configuration file as `${{ secrets.MONDOO_CLIENT_ACCOUNT }}`.
-
-**scan_type**
-
-The type of Mondoo scan to perform:
-
-- `k8s` for Kubernetes manifest scanning.
-- `terraform` for Terraform configuration file scanning.
-- `docker_image` for scanning of Docker images from a Docker registry or from earlier GitHub actions steps.
-- `docker_image_from_dockerfile` for scanning of Docker images from a Dockerfile. Note: This will build and then scan the image which make be a lengthy process.
-
-**path**
-
-The file to scan with Mondoo or, if `scan_type` is set to `docker_image_from_dockerfile`, the path to the Dockerfile. Examples: `nginx.yml` or `Dockerfile`
-
-**docker_image_name**
-
-The container image name to scan when `scan_type` is set to `docker_image`. ex: `nginx:22.04`
-
-**score_threshold**
-
-The score threshold for scans. Value can be any number from `0-100`. If any score falls below the threshold, exit 1. Default value is `0`.
-
-**output_format**
-
-Set the output format (`compact`|`full`|`csv`|`json`|`junit`|`yaml`). Default `compact`.
-
-**extra_args**
-
-Allows specify extra command-line arguments for the Mondoo scan command.
+1. Click on **Settings** in your GitHub repository.
+2. Under the **Security** section click on **Actions**.
+3. Click **New repository secret**.
+4. Name the secret `MONDOO_SERVICE_ACCOUNT` and paste the base64 encoded credentials from the previous section into the value input.
+5. Click **Add secret**.
 
 ## Examples Workflows
 
 Simple scan of nginx.yml Kubernetes manifest:
 
 ```yaml
-name: mondoo-scan
-
+name: Mondoo Kubernetes Manifest scan
 on:
-  pull_request:
   push:
-    branches: [main]
-
+    paths:
+    - 'k8s/*.yaml'
 jobs:
-  build:
+  install:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
-      - name: Scan with Mondoo
-        uses: mondoohq/actions@main
-        with:
-          service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
-          scan_type: k8s
-          path: nginx.yml
+    - uses: actions/checkout@master
+    - uses: mondoohq/actions/kubernetes@master
+      with:
+        service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        path: k8s/*.yaml
 ```
 
 Simple scan of Terraform files:
 
 ```yaml
-name: mondoo-scan
-
+name: Mondoo Terraform scan
 on:
-  pull_request:
   push:
-    branches: [main]
-
+    paths:
+    - 'terraform/main.tf'
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Scan with Mondoo
-        uses: mondoohq/actions@main
-        with:
-          service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
-          scan_type: terraform
-          path: '*.tf'
+  steps:
+  - uses: actions/checkout@master
+  
+  - uses: mondoohq/actions/terraform@master
+    with:
+      service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+      path: terraform
 ```
 
-Build a Docker container from a Dockerfile and scan the container:
+Build a Docker image before pushing to a registry:
 
 ```yaml
-name: mondoo-scan
+name: docker-build-scan-push
 
 on:
-  pull_request:
   push:
-    branches: [main]
+
+env:
+  APP: myapp
+  VERSION: 0.1.0
 
 jobs:
-  build:
+  docker-build-scan-push:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
-      - name: Scan with Mondoo
-        uses: mondoohq/actions@main
+      - 
+        name: Checkout 
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to GHCR.io
+        uses: docker/login-action@v2
         with:
-          service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
-          scan_type: docker_image_from_dockerfile
-          path: Dockerfile
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_TOKEN }}
+      -
+        name: Build and export to Docker
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          load: true
+          tags: |
+            ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
+            ghcr.io/${{github.repository_owner}}/${{env.APP}}:${{env.VERSION}}
+          secrets: 
+            GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
+      -
+        name: Scan Docker Image with Mondoo
+        uses: mondoohq/actions/docker-image@master
+        with:
+          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+          image: ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
+      -
+        name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          tags: |
+            ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
+            ghcr.io/${{github.repository_owner}}/${{env.APP}}:${{env.VERSION}}
+          push: ${{ github.ref == 'refs/heads/main' }}
+      
+      - 
+        name: Image Digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
 ```
 
-Scan a Docker image from a previous built image or image in a registry:
+## License
 
-```yaml
-name: mondoo-scan
-
-on:
-  pull_request:
-  push:
-    branches: [main]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Scan with Mondoo
-        uses: mondoohq/actions@main
-        with:
-          service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
-          scan_type: docker_image
-          docker_image_name: ubuntu:22.04
-```
-
-Build a Docker container from a Dockerfile, scan the container, and configure `output_format` and `score_threshold`:
-
-```yaml
-name: mondoo-scan
-
-on:
-  pull_request:
-  push:
-    branches: [main]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Scan with Mondoo
-        uses: mondoohq/actions@main
-        with:
-          service_account_credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
-          scan_type: docker_image_from_dockerfile
-          path: Dockerfile
-          output_format: json
-          score_threshold: 80
-```
+[Mozilla Public License v2.0](https://github.com/mondoohq/actions/blob/main/LICENSE)
