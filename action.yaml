@@ -1,5 +1,8 @@
 name: Setup Mondoo Action
 description: Installs Mondoo Client into a workflow
+branding:
+  icon: 'shield'
+  color: 'purple'
 inputs:
   args:
     description: >-
