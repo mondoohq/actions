@@ -34,5 +34,4 @@ jobs:
     - uses: mondoohq/actions/k8s@master
       with:
         service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
-        
 ```

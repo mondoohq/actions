@@ -1,4 +1,5 @@
 # Mondoo GitHub Action
+
 A set of GitHub Action for using Mondoo to check for vulnerabilities and misconfigurations in your GitHub projects. Actions have been organized into different asset types that Mondoo supports.  We currently support the following asset types:
 
 - [AWS](aws) - Scan AWS accounts for misconfigurations as a post-provisioning step in your pipeline.
@@ -13,7 +14,7 @@ A set of GitHub Action for using Mondoo to check for vulnerabilities and misconf
 
 All Mondoo GitHub Actions require a [service account](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) to authenticate with Mondoo Platform and run policies enabled for your assets in the Policy Hub.
 
-### Create Service Account 
+### Create Service Account
 
 To create a service account on Mondoo Platform:
 
@@ -24,7 +25,7 @@ To create a service account on Mondoo Platform:
 5. Select the **Base64-encoded** checkbox, and then click on the **GENERATE NEW CREDENTIALS** button.
 6. Copy the base64 encoded credentials and then move on to the next section.
 
-### Add new GitHub Actions Secrets 
+### Add new GitHub Actions Secrets
 
 1. Click on **Settings** in your GitHub repository.
 2. Under the **Security** section click on **Actions**.

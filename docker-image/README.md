@@ -1,4 +1,5 @@
 # Mondoo Docker Action
+
 A GitHub Action for using Mondoo to check for vulnerabilities and misconfigurations in your Docker container images. 
 
 ## Properties
