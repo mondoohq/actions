@@ -1,4 +1,5 @@
 # Mondoo AWS Action
+
 A GitHub Action for using Mondoo to check for misconfigurations in your AWS accounts. This action can be used as a post-provisioning step when making changes to your AWS account.  
 
 ## Properties

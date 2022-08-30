@@ -1,4 +1,5 @@
 # Mondoo Terraform Action
+
 A [GitHub Action](https://github.com/features/actions) for testing [HashiCorp Terraform](https://terraform.io) code for security misconfigurations. 
 
 ## Properties

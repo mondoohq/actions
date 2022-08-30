@@ -1,4 +1,5 @@
 # Mondoo Policy Action
+
 A GitHub Action for publishing Mondoo policies to Mondoo Platform.
 
 ## Service Account Permissions

@@ -1,4 +1,5 @@
 # Mondoo Kubernetes Manifest Action
+
 A GitHub Action for using Mondoo to scan Kubernetes manifests for security misconfigurations. 
 
 For Kubernetes cluster scanning see Mondoo's [k8s](../k8s/) action.
