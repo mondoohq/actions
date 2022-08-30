@@ -1,0 +1,45 @@
+
+name: Docker Image Scanning
+on:
+  pull_request:
+  push:
+    paths:
+      - "action.yaml"
+      - "docker-image/*"
+      - ".github/test_files/**"
+    branches:
+      - "main"
+    tags: ["v*.*.*"]
+
+env:
+  APP: mondoo-test
+  VERSION: 0.1.0
+
+jobs:
+  docker-build-scan-push:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Checkout 
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Build and export to Docker
+        uses: docker/build-push-action@v3
+        with:
+          context: ./.github/test_files/
+          load: true
+          tags: |
+            ${{env.APP}}:${{env.VERSION}}
+
+      -
+        name: Scan Docker Image
+        uses: ./docker-image
+        with:
+          service-account-credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
+          image: ${{env.APP}}:${{env.VERSION}}
