@@ -1,0 +1,10 @@
+buildx
+checkbox
+ghcr
+Hashi
+KUBECONFIG
+kubernetes
+mondoo
+mondoohq
+Mozilla
+myapp
