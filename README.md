@@ -47,8 +47,8 @@ jobs:
   install:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: mondoohq/actions/kubernetes@master
+    - uses: actions/checkout@v3
+    - uses: mondoohq/actions/kubernetes@main
       with:
         service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         path: k8s/*.yaml
@@ -64,9 +64,9 @@ on:
     - 'terraform/main.tf'
 jobs:
   steps:
-  - uses: actions/checkout@master
+  - uses: actions/checkout@v3
   
-  - uses: mondoohq/actions/terraform@master
+  - uses: mondoohq/actions/terraform@main
     with:
       service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
       path: terraform
@@ -90,7 +90,7 @@ jobs:
     steps:
       - 
         name: Checkout 
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -117,7 +117,7 @@ jobs:
             GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
       -
         name: Scan Docker Image with Mondoo
-        uses: mondoohq/actions/docker-image@master
+        uses: mondoohq/actions/docker-image@main
         with:
           service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           image: ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest

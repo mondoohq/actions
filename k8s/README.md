@@ -30,8 +30,8 @@ jobs:
   scan-k8s-cluster:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: mondoohq/actions/k8s@master
+    - uses: actions/checkout@v3
+    - uses: mondoohq/actions/k8s@main
       with:
         service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
 ```
