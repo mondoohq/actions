@@ -37,7 +37,7 @@ jobs:
     steps:
       - 
         name: Checkout 
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -64,7 +64,7 @@ jobs:
             GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
       -
         name: Scan Docker Image
-        uses: mondoohq/actions/docker-image@master
+        uses: mondoohq/actions/docker-image@main
         with:
           service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           image: ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest

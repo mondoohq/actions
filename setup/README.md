@@ -24,9 +24,9 @@ jobs:
   install:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v3
 
-    - uses: mondoohq/actions/setup@master
+    - uses: mondoohq/actions/setup@main
       with:
         service_account_credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         args: status

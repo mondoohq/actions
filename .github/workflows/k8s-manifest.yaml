@@ -21,5 +21,5 @@ jobs:
       - name: Scan k8s manifest
         uses: ./k8s-manifest
         with:
-          service-account-credentials: ${{ secrets.MONDOO_CLIENT_ACCOUNT }}
+          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           path: ./.github/test_files/k8s-manifest.yaml

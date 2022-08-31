@@ -28,8 +28,8 @@ on:
 jobs:
   
     steps:
-    - uses: actions/checkout@master
-    - uses: mondoohq/actions/terraform@master
+    - uses: actions/checkout@v3
+    - uses: mondoohq/actions/terraform@main
       with:
         service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         path: terraform

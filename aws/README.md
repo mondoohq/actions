@@ -26,7 +26,7 @@ jobs:
   scan-aws-account:
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -35,7 +35,7 @@ jobs:
         role-to-assume: arn:aws:iam::123456789100:role/my-github-actions-role
         role-session-name: MySessionName
 
-    - uses: mondoohq/actions/aws@master
+    - uses: mondoohq/actions/aws@main
       with:
         service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         output: compact
