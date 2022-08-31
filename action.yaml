@@ -1,5 +1,5 @@
-name: Setup Mondoo Action
-description: Installs Mondoo Client into a workflow
+name: Mondoo Action
+description: Mondoo Actions to scan IaC configs, containers, servers, clouds, and Kubernetes
 branding:
   icon: 'shield'
   color: 'purple'
@@ -29,9 +29,6 @@ runs:
           echo Installing Mondoo Client...
           echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
           curl -sSL https://mondoo.com/install.sh | bash
-      shell: bash
-    - name: Mondoo status
-      run: mondoo status --config mondoo.json
       shell: bash
     - name: Run Mondoo
       shell: bash
