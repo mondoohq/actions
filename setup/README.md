@@ -28,6 +28,6 @@ jobs:
 
     - uses: mondoohq/actions/setup@main
       with:
-        service_account_credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         args: status
 ```
