@@ -1,6 +1,6 @@
 # Mondoo GitHub Action
 
-A set of GitHub Action for using Mondoo to check for vulnerabilities and misconfigurations in your GitHub projects. Actions have been organized into different asset types that Mondoo supports.  We currently support the following asset types:
+A set of GitHub Action for using Mondoo to check for vulnerabilities and misconfigurations in your GitHub projects. Actions have been organized into different asset types that Mondoo supports. We currently support the following asset types:
 
 - [AWS](aws) - Scan AWS accounts for misconfigurations as a post-provisioning step in your pipeline.
 - [Docker Image](docker-image) - Scan Docker images vulnerabilities and misconfigurations before pushing to a container registry.
@@ -42,16 +42,16 @@ name: Mondoo Kubernetes Manifest scan
 on:
   push:
     paths:
-    - 'k8s/*.yaml'
+      - "k8s/*.yaml"
 jobs:
   install:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: mondoohq/actions/kubernetes@main
-      with:
-        service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
-        path: k8s/*.yaml
+      - uses: actions/checkout@v3
+      - uses: mondoohq/actions/kubernetes@main
+        with:
+          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+          path: k8s/*.yaml
 ```
 
 Simple scan of Terraform files:
@@ -61,15 +61,15 @@ name: Mondoo Terraform scan
 on:
   push:
     paths:
-    - 'terraform/main.tf'
+      - "terraform/main.tf"
 jobs:
   steps:
-  - uses: actions/checkout@v3
-  
-  - uses: mondoohq/actions/terraform@main
-    with:
-      service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
-      path: terraform
+    - uses: actions/checkout@v3
+
+    - uses: mondoohq/actions/terraform@main
+      with:
+        service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        path: terraform
 ```
 
 Build a Docker image before pushing to a registry:
@@ -88,24 +88,19 @@ jobs:
   docker-build-scan-push:
     runs-on: ubuntu-latest
     steps:
-      - 
-        name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v3
-      -
-        name: Set up QEMU
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      -
-        name: Login to GHCR.io
+      - name: Login to GHCR.io
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
-      -
-        name: Build and export to Docker
+      - name: Build and export to Docker
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -113,16 +108,13 @@ jobs:
           tags: |
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:${{env.VERSION}}
-          secrets: 
-            GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
-      -
-        name: Scan Docker Image with Mondoo
+          secrets: GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
+      - name: Scan Docker Image with Mondoo
         uses: mondoohq/actions/docker-image@main
         with:
           service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           image: ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
-      -
-        name: Build and push
+      - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -130,9 +122,8 @@ jobs:
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:${{env.VERSION}}
           push: ${{ github.ref == 'refs/heads/main' }}
-      
-      - 
-        name: Image Digest
+
+      - name: Image Digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 ```
 

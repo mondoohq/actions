@@ -1,8 +1,8 @@
 name: Mondoo Action
 description: Mondoo Actions to scan IaC configs, containers, servers, clouds, and Kubernetes
 branding:
-  icon: 'shield'
-  color: 'purple'
+  icon: "shield"
+  color: "purple"
 inputs:
   args:
     description: >-
@@ -26,9 +26,9 @@ runs:
   steps:
     - name: Install Mondoo Client
       run: |
-          echo Installing Mondoo Client...
-          echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
-          curl -sSL https://mondoo.com/install.sh | bash
+        echo Installing Mondoo Client...
+        echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
+        curl -sSL https://mondoo.com/install.sh | bash
       shell: bash
     - name: Run Mondoo
       shell: bash
