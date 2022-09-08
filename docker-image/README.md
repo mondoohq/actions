@@ -1,14 +1,14 @@
 # Mondoo Docker Action
 
-A GitHub Action for using Mondoo to check for vulnerabilities and misconfigurations in your Docker container images. 
+A GitHub Action for using Mondoo to check for vulnerabilities and misconfigurations in your Docker container images.
 
 ## Properties
 
 The Mondoo Docker Image Action has properties which are passed to the underlying image. These are passed to the action using `with`.
 
 | Property                      | Required | Default | Description                                                                                                                                                          |
-|-------------------------------|----------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `args`                        | false    |         | Additional arguments to pass to Mondoo Client.                                                                                                                              |
+| ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `args`                        | false    |         | Additional arguments to pass to Mondoo Client.                                                                                                                       |
 | `image`                       | true     |         | Docker image ID or `name:tag` to scan.                                                                                                                               |
 | `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                 |
 | `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                   |
@@ -19,7 +19,7 @@ You can use the Action as follows:
 
 ## Docker build scan and push to GHCR.io
 
-The following example uses the Docker [build-push-action](https://github.com/marketplace/actions/build-and-push-docker-images) to build a Docker container, scan the built container with Mondoo, and then push to ghcr.io. Use the `score-threshold` property to ensure builds meet security requirements before publishing. 
+The following example uses the Docker [build-push-action](https://github.com/marketplace/actions/build-and-push-docker-images) to build a Docker container, scan the built container with Mondoo, and then push to ghcr.io. Use the `score-threshold` property to ensure builds meet security requirements before publishing.
 
 ```yaml
 name: docker-build-scan-push
@@ -35,24 +35,19 @@ jobs:
   docker-build-scan-push:
     runs-on: ubuntu-latest
     steps:
-      - 
-        name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v3
-      -
-        name: Set up QEMU
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      -
-        name: Login to GHCR.io
+      - name: Login to GHCR.io
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
-      -
-        name: Build and export to Docker
+      - name: Build and export to Docker
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -60,16 +55,13 @@ jobs:
           tags: |
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:${{env.VERSION}}
-          secrets: 
-            GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
-      -
-        name: Scan Docker Image
+          secrets: GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
+      - name: Scan Docker Image
         uses: mondoohq/actions/docker-image@main
         with:
           service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           image: ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
-      -
-        name: Build and push
+      - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -77,8 +69,7 @@ jobs:
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:${{env.VERSION}}
           push: ${{ github.ref == 'refs/heads/main' }}
-      
-      - 
-        name: Image Digest
+
+      - name: Image Digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 ```

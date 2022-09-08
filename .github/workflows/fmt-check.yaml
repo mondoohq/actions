@@ -1,0 +1,22 @@
+name: Action Format Checking
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  format-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install Prettier
+        shell: bash
+        run: npm install prettier -g
+      - name: Run format checker
+        shell: bash
+        run: make test/fmt

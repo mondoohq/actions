@@ -1,8 +1,8 @@
 name: "Mondoo Policy Action"
 description: "A GitHub Action to add Mondoo policies on Mondoo Platform."
 branding:
-  icon: 'shield'
-  color: 'purple'
+  icon: "shield"
+  color: "purple"
 inputs:
   args:
     description: >-
@@ -30,9 +30,9 @@ runs:
     - name: Install Mondoo Client
       shell: bash
       run: |
-          echo Installing Mondoo Client...
-          echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
-          curl -sSL https://mondoo.com/install.sh | bash
+        echo Installing Mondoo Client...
+        echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
+        curl -sSL https://mondoo.com/install.sh | bash
     - name: Mondoo status
       shell: bash
       run: mondoo status --config mondoo.json
