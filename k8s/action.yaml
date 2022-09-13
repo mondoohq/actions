@@ -1,8 +1,8 @@
 name: "Mondoo Kubernetes Cluster Action"
 description: "Scan Kubernetes clusters for vulnerabilities and misconfigurations with Mondoo"
 branding:
-  icon: 'shield'
-  color: 'purple'
+  icon: "shield"
+  color: "purple"
 inputs:
   args:
     description: >-
@@ -21,7 +21,7 @@ inputs:
   score-threshold:
     description: >-
       Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
-    default: '0'
+    default: "0"
     required: false
   service-account-credentials:
     description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
@@ -32,9 +32,9 @@ runs:
     - name: Install Mondoo Client
       shell: bash
       run: |
-          echo Installing Mondoo Client...
-          echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
-          curl -sSL https://mondoo.com/install.sh | bash
+        echo Installing Mondoo Client...
+        echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
+        curl -sSL https://mondoo.com/install.sh | bash
     - name: Mondoo status
       shell: bash
       run: mondoo status --config mondoo.json
