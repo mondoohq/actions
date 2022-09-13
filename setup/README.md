@@ -6,12 +6,12 @@ A [GitHub Action](https://github.com/features/actions) for installing [Mondoo Cl
 
 The Mondoo Setup Action has properties which are passed to the underlying image. These are passed to the action using `with`.
 
-| Property                      | Required | Default | Description                                                                                                                                                          |
-| ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `args`                        | false    |         | Additional arguments to pass to Mondoo Client.                                                                                                                       |
-| `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                 |
-| `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                   |
-| `service-account-credentials` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) used to authenticate with Mondoo Platform |
+| Property                      | Required | Default | Description |
+| ----------------------------- | -------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `args`                        | false    |                     | Additional arguments to pass to Mondoo Client.                                                                                                                       |
+| `log-level`                   | false    | info                | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                 |
+| `output`                      | false    | compact             | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                   |
+| `service-account-credentials` | true     |                     | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) used to authenticate with Mondoo Platform |
 
 ## Mondoo Setup example
 
