@@ -4,8 +4,8 @@ A set of GitHub Action for using Mondoo to check for vulnerabilities and misconf
 
 - [AWS](aws) - Scan AWS accounts for misconfigurations as a post-provisioning step in your pipeline.
 - [Docker Image](docker-image) - Scan Docker images vulnerabilities and misconfigurations before pushing to a container registry.
-- [GitHub Organization](github-org) - Scan a GitHub organization and optionally with all its repository for misconfigurations.
-- [GitHub Repository](github-repo) - Scan a GitHub repository for misconfiguration
+- [GitHub Organization](github-org) - Scan a GitHub organization and repositories for security configuration best practices.
+- [GitHub Repository](github-repo) - Scan a GitHub repository for security configuration best practices.
 - [Kubernetes](k8s) - Scan Kubernetes Clusters post-deploy for continuous auditing and compliance of the cluster.
 - [Kubernetes Manifest](k8s-manifest) - Scan Kubernetes manifests for misconfigurations before applying changes to the cluster.
 - [Policy](policy) - Publish Mondoo policies to Mondoo Platform using GitHub Actions.
