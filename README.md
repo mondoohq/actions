@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: mondoohq/actions/kubernetes@main
+      - uses: mondoohq/actions/k8s-manifest@main
         with:
           service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           path: k8s/*.yaml
