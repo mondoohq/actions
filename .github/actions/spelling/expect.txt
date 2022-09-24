@@ -3,7 +3,7 @@ checkbox
 ghcr
 Hashi
 KUBECONFIG
-kubernetes
+Kubernetes
 mondoo
 mondoohq
 Mozilla
