@@ -1,0 +1,19 @@
+policies:
+  - uid: terraform-state-sample-policy
+    name: Terraform State - GitHub
+    version: "1.1.0"
+    authors:
+      - name: Mondoo, Inc.
+        email: hello@mondoo.com
+    specs:
+      - title: GitHub Test
+        asset_filter:
+          query: |
+            platform.name == "terraform-state"
+        scoring_queries:
+          terraform-state-check-null-provider: null
+queries:
+  - uid: terraform-state-check-null-provider
+    title: Check null provider
+    query: |
+      terraform.state.rootModule.resources { providerName == "registry.terraform.io/hashicorp/null" }

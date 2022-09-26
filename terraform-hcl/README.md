@@ -1,6 +1,6 @@
-# Mondoo Terraform Action
+# Mondoo Terraform HCL Action
 
-A [GitHub Action](https://github.com/features/actions) for testing [HashiCorp Terraform](https://terraform.io) code for security misconfigurations.
+A [GitHub Action](https://github.com/features/actions) for testing [HashiCorp Terraform](https://terraform.io) [HCL code]](https://www.terraform.io/language/syntax/configuration) for security misconfigurations.
 
 ## Properties
 

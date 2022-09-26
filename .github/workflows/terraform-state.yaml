@@ -1,0 +1,54 @@
+name: Terraform State Scanning Tests
+on:
+  pull_request:
+  push:
+    paths:
+      - "action.yaml"
+      - "terraform-plan/*"
+      - "terraform-state/*"
+      - ".github/test_files/**"
+    branches:
+      - "main"
+    tags: ["v*.*.*"]
+
+jobs:
+  terraform-tests:
+    runs-on: ubuntu-latest
+    name: Test Terraform scanning
+    steps:
+      - uses: actions/checkout@v3
+
+      # run terraform plan checks
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          # super important setting, otherwise you cannot pipe terraform show -json
+          # see https://stackoverflow.com/questions/66496105/how-can-i-remove-all-the-extraneous-output-from-redirected-output-in-github-acti
+          terraform_wrapper: false
+      - run: terraform init
+        working-directory: ./.github/test_files/tfstate
+      - name: Write terraform plan
+        run: terraform plan -out plan
+        working-directory: ./.github/test_files/tfstate
+      - name: Export terraform plan to json
+        shell: bash
+        run: terraform show -json plan > plan.json
+        working-directory: ./.github/test_files/tfstate
+      - name: Export terraform state to json
+        shell: bash
+        run: |
+          terraform apply plan
+          terraform show -json terraform.tfstate > state.json
+        working-directory: ./.github/test_files/tfstate
+      - name: Upload terraform plan
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform
+          path: |
+            .github/test_files/tfstate/plan.json
+            .github/test_files/tfstate/state.json
+      - name: Scan Terraform State
+        uses: ./terraform-state
+        with:
+          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+          path: ".github/test_files/tfstate/state.json"
+          args: "--policy-bundle .github/test_files/tfstate/policy/policy.mql.yaml"
