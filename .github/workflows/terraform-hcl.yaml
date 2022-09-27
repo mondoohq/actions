@@ -1,10 +1,10 @@
-name: Terraform Scanning
+name: Terraform HCL Scanning Tests
 on:
   pull_request:
   push:
     paths:
       - "action.yaml"
-      - "terraform/*"
+      - "terraform-hcl/*"
       - ".github/test_files/**"
     branches:
       - "main"
@@ -16,9 +16,8 @@ jobs:
     name: Test Terraform scanning
     steps:
       - uses: actions/checkout@v3
-
-      - name: Scan Terraform
-        uses: ./terraform
+      - name: Scan Terraform HCL
+        uses: ./terraform-hcl
         with:
           service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           path: ./.github/test_files/tf

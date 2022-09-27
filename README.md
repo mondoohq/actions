@@ -10,7 +10,9 @@ A set of GitHub Action for using Mondoo to check for vulnerabilities and misconf
 - [Kubernetes Manifest](k8s-manifest) - Scan Kubernetes manifests for misconfigurations before applying changes to the cluster.
 - [Policy](policy) - Publish Mondoo policies to Mondoo Platform using GitHub Actions.
 - [Setup](setup) - Install and configure Mondoo into any existing GitHub Action workflow.
-- [Terraform](terraform) - Scan HashiCorp Terraform code for security misconfigurations.
+- [Terraform HCL](terraform-hcl) - Scan HashiCorp Terraform HCL code for security misconfigurations.
+- [Terraform Plan](terraform-plan) - Scan HashiCorp Terraform Plan for security misconfigurations.
+- [Terraform State](terraform-state) - Scan HashiCorp Terraform State output for security misconfigurations.
 
 ## Service Accounts
 

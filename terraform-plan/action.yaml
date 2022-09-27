@@ -1,5 +1,5 @@
-name: "Mondoo Terraform GitHub Action"
-description: "Scan HashiCorp Terraform for misconfigurations with Mondoo"
+name: "Mondoo Terraform Plan GitHub Action"
+description: "Scan HashiCorp Terraform Plan for misconfigurations with Mondoo"
 branding:
   icon: "shield"
   color: "purple"
@@ -44,9 +44,9 @@ runs:
     - name: Scan Terraform
       shell: bash
       run: >
-        mondoo scan terraform ${{ inputs.path }}
-        --log-level ${{ inputs.log-level }}
-        --output ${{ inputs.output }}
-        --score-threshold ${{ inputs.score-threshold }}
+        mondoo scan terraform plan "${{ inputs.path }}"
+        --log-level "${{ inputs.log-level }}"
+        --output "${{ inputs.output }}"
+        --score-threshold "${{ inputs.score-threshold }}"
         --config mondoo.json
         ${{ inputs.args }}

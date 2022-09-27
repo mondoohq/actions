@@ -1,0 +1,23 @@
+policies:
+  - uid: terraform-plan-sample-policy
+    name: Terraform Plan - GitHub
+    version: "1.1.0"
+    authors:
+      - name: Mondoo, Inc.
+        email: hello@mondoo.com
+    specs:
+      - title: GitHub Test
+        asset_filter:
+          query: |
+            platform.name == "terraform-plan"
+            terraform.plan.resourceChanges.any( providerName == "registry.terraform.io/integrations/github")
+        scoring_queries:
+          terraform-github-repo-visibility: null
+queries:
+  - uid: terraform-github-repo-visibility
+    title: Check GitHub repository visibility
+    query: |
+      terraform.plan.resourceChanges.where( type == "github_repository" && mode == "managed") {
+        name == "example"
+        change.after["visibility"] = "public"
+      }
