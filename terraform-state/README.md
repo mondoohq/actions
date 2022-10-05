@@ -28,7 +28,7 @@ on:
 jobs:
   steps:
     - uses: actions/checkout@v3
-    - uses: mondoohq/actions/terraform@main
+    - uses: mondoohq/actions/terraform-state@main
       with:
         service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         path: terraform
