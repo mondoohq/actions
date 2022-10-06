@@ -1,6 +1,6 @@
 # Mondoo Terraform HCL Action
 
-A [GitHub Action](https://github.com/features/actions) for testing [HashiCorp Terraform](https://terraform.io) [HCL code]](https://www.terraform.io/language/syntax/configuration) for security misconfigurations.
+A [GitHub Action](https://github.com/features/actions) for testing [HashiCorp Terraform](https://terraform.io) [HCL code](https://www.terraform.io/language/syntax/configuration) for security misconfigurations.
 
 ## Properties
 
@@ -28,7 +28,7 @@ on:
 jobs:
   steps:
     - uses: actions/checkout@v3
-    - uses: mondoohq/actions/terraform@main
+    - uses: mondoohq/actions/terraform-hcl@main
       with:
         service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         path: terraform
