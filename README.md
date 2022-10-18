@@ -131,6 +131,10 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
 ```
 
+## Join the community!
+
+Join the [Mondoo Community GitHub Discussions](https://github.com/orgs/mondoohq/discussions) to collaborate on policy as code and security automation.
+
 ## License
 
 [Mozilla Public License v2.0](https://github.com/mondoohq/actions/blob/main/LICENSE)
