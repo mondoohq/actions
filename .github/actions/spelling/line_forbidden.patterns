@@ -7,6 +7,12 @@
 # s.b. GitLab
 \bGitlab\b
 
+# s.b. EventBridge
+\bEventbridge\b
+
+# s.b. CloudWatch
+\bCloudwatch\b
+
 # s.b. JavaScript
 \bJavascript\b
 
