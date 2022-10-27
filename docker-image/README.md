@@ -14,7 +14,7 @@ The Mondoo Docker Image Action has properties which are passed to the underlying
 | `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                   |
 | `score-threshold`             | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).      |
 
-Additonally, you need to specify the service account credentials as environement variable.
+Additionally, you need to specify the service account credentials as an environment variable.
 
 | Environment                   | Required | Default | Description                                                                                                                                                          |
 | ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
