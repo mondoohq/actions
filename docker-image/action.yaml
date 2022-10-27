@@ -29,23 +29,17 @@ inputs:
     description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
     required: true
 runs:
-  using: "composite"
-  steps:
-    - name: Install Mondoo Client
-      shell: bash
-      run: |
-        echo Installing Mondoo Client...
-        echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
-        curl -sSL https://mondoo.com/install.sh | bash
-    - name: Mondoo status
-      shell: bash
-      run: mondoo status --config mondoo.json
-    - name: Run mondoo scan docker image
-      shell: bash
-      run: >
-        mondoo scan docker image ${{ inputs.image }}
-        --output ${{ inputs.output }}
-        --score-threshold ${{ inputs.score-threshold }}
-        --log-level ${{ inputs.log-level }}
-        ${{ inputs.args }}
-        --config mondoo.json
+  using: "docker"
+  image: "docker://ghcr.io/mondoohq/cnspec"
+  args:
+    - scan
+    - docker
+    - image
+    - ${{ inputs.image }}
+    - --output
+    - ${{ inputs.output }}
+    - --score-threshold
+    - ${{ inputs.score-threshold }}
+    - --log-level
+    - ${{ inputs.log-level }}
+    - ${{ inputs.args }}
