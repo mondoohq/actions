@@ -6,18 +6,18 @@ A GitHub Action for using Mondoo to check for vulnerabilities and misconfigurati
 
 The Mondoo Docker Image Action has properties which are passed to the underlying image. These are passed to the action using `with`.
 
-| Property                      | Required | Default | Description                                                                                                                                                          |
-| ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `args`                        | false    |         | Additional arguments to pass to Mondoo Client.                                                                                                                       |
-| `image`                       | true     |         | Docker image ID or `name:tag` to scan.                                                                                                                               |
-| `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                 |
-| `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                   |
-| `score-threshold`             | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).      |
+| Property          | Required | Default | Description                                                                                                                                                     |
+| ----------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `args`            | false    |         | Additional arguments to pass to Mondoo Client.                                                                                                                  |
+| `image`           | true     |         | Docker image ID or `name:tag` to scan.                                                                                                                          |
+| `log-level`       | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                            |
+| `output`          | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                              |
+| `score-threshold` | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan). |
 
 Additionally, you need to specify the service account credentials as an environment variable.
 
-| Environment                   | Required | Default | Description                                                                                                                                                          |
-| ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Environment            | Required | Default | Description                                                                                                                                                          |
+| ---------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) used to authenticate with Mondoo Platform |
 
 You can use the Action as follows:
