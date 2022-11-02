@@ -27,7 +27,7 @@ inputs:
     required: false
 runs:
   using: "docker"
-  image: "docker://mondoo/mondoo"
+  image: "docker://mondoo/client"
   args:
     - scan
     - docker
