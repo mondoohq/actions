@@ -39,4 +39,3 @@ runs:
     - ${{ inputs.score-threshold }}
     - --log-level
     - ${{ inputs.log-level }}
-    - ${{ inputs.args }}
