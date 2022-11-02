@@ -35,6 +35,6 @@ jobs:
       - name: Scan Docker Image
         uses: ./docker-image
         with:
-          image: ${{env.APP}}:${{env.VERSION}}
+          image: ubuntu:22.04
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
