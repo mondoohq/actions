@@ -27,7 +27,7 @@ inputs:
     required: false
 runs:
   using: "docker"
-  image: "docker://ghcr.io/mondoohq/cnspec"
+  image: "docker://mondoo/cnspec"
   args:
     - scan
     - docker
