@@ -36,5 +36,6 @@ jobs:
         uses: ./docker-image
         with:
           image: ubuntu:22.04
+          log-level: debug
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
