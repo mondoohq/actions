@@ -13,6 +13,11 @@ inputs:
       Sets the log level: error, warn, info, debug, trace (default "info")
     default: info
     required: false
+  junit-path:
+    description: >-
+      Set the path where scan results are saved in JUnit format. NOTE: This requires that output is set to junit.
+    default: mondoo-junit.xml
+    required: false
   output:
     description: >-
       Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
@@ -50,3 +55,6 @@ runs:
         --score-threshold ${{ inputs.score-threshold }}
         ${{ inputs.args }}
         --config mondoo.json
+        if [ ${{ inputs.output }} == 'junit' ]; then
+        >  ${{ inputs.junit-path }}
+        fi
