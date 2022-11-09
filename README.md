@@ -73,7 +73,7 @@ jobs:
 
     - uses: mondoohq/actions/terraform-hcl@main
       env:
-          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
       with:
         path: terraform
 ```
