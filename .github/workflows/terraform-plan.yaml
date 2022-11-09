@@ -40,7 +40,7 @@ jobs:
           path: .github/test_files/tfplan/plan.json
       - name: Scan Terraform Plan
         uses: ./terraform-plan
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
-          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           path: ".github/test_files/tfplan/plan.json"
-          args: "--policy-bundle .github/test_files/tfplan/policy/policy.mql.yaml"

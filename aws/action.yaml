@@ -5,10 +5,6 @@ branding:
   icon: "shield"
   color: "purple"
 inputs:
-  args:
-    description: >-
-      Additional arguments to pass to Mondoo Client.
-    required: false
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
@@ -24,23 +20,16 @@ inputs:
       Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
     default: "0"
     required: false
-  service-account-credentials:
-    description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
-    required: true
 runs:
-  using: "composite"
-  steps:
-    - run: |
-        echo Installing Mondoo Client...
-        echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
-        curl -sSL https://mondoo.com/install.sh | bash
-      shell: bash
-    - name: Scan AWS account
-      shell: bash
-      run: >
-        mondoo scan aws
-        --output ${{ inputs.output }}
-        --score-threshold ${{ inputs.score-threshold }}
-        --log-level ${{ inputs.log-level }}
-        ${{ inputs.args }}
-        --config mondoo.json
+  using: "docker"
+  image: "docker://mondoo/cnspec"
+  args:
+    - scan
+    - aws
+    - ${{ inputs.image }}
+    - --output
+    - ${{ inputs.output }}
+    - --score-threshold
+    - ${{ inputs.score-threshold }}
+    - --log-level
+    - ${{ inputs.log-level }}
