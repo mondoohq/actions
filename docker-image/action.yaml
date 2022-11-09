@@ -4,9 +4,6 @@ branding:
   icon: "shield"
   color: "purple"
 inputs:
-  args:
-    description: "Additional arguments to pass to Mondoo Client"
-    required: false
   image:
     description: Docker image ID or name:tag to scan.
     required: true
@@ -39,4 +36,3 @@ runs:
     - ${{ inputs.score-threshold }}
     - --log-level
     - ${{ inputs.log-level }}
-    - ${{ inputs.args }}
