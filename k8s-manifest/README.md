@@ -8,12 +8,12 @@ For Kubernetes cluster scanning see Mondoo's [k8s](../k8s/) action.
 
 The Kubernetes Manifest Action has properties which are passed to the underlying image. These are passed to the action using `with`.
 
-| Property                      | Required | Default | Description                                                                                                                                                          |
-| ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                 |
-| `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                   |
-| `path`                        | true     |         | Path to Kubernetes manifest file.                                                                                                                                    |
-| `score-threshold`             | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).      |
+| Property          | Required | Default | Description                                                                                                                                                     |
+| ----------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `log-level`       | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                            |
+| `output`          | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                              |
+| `path`            | true     |         | Path to Kubernetes manifest file.                                                                                                                               |
+| `score-threshold` | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan). |
 
 Additionally, you need to specify the service account credentials as an environment variable.
 

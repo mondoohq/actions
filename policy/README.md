@@ -12,11 +12,11 @@ Adding policies to Mondoo Platform requires a [Mondoo service account](https://m
 
 The Mondoo Policy Action has properties which are passed to the underlying image. These are passed to the action using `with`.
 
-| Property                      | Required | Default | Description                                                                                                                                                          |
-| ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                 |
-| `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                   |
-| `path`                        | true     |         | Path to the policy file.                                                                                                                                             |
+| Property    | Required | Default | Description                                                                                                        |
+| ----------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------ |
+| `log-level` | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                               |
+| `output`    | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact") |
+| `path`      | true     |         | Path to the policy file.                                                                                           |
 
 Additionally, you need to specify the service account credentials as an environment variable.
 

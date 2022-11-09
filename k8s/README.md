@@ -8,11 +8,11 @@ For Kubernetes manifest scanning see Mondoo's [k8s-manifest](../k8s-manifest/) a
 
 The Kubernetes Cluster Action has properties which are passed to the underlying image. These are passed to the action using `with`.
 
-| Property                      | Required | Default | Description                                                                                                                                                          |
-| ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                 |
-| `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                   |
-| `score-threshold`             | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).      |
+| Property          | Required | Default | Description                                                                                                                                                     |
+| ----------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `log-level`       | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                            |
+| `output`          | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                              |
+| `score-threshold` | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan). |
 
 Additionally, you need to specify the service account credentials as an environment variable.
 
