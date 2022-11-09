@@ -8,8 +8,8 @@ inputs:
     required: false
   output:
     description: >-
-      Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
-    default: compact
+      Set the output format: yaml, json (default "json")
+    default: json
     required: false
 runs:
   using: "docker"

@@ -4,6 +4,10 @@ branding:
   icon: "shield"
   color: "purple"
 inputs:
+  args:
+    description: >-
+      Additional arguments to pass to cnspec Client.
+    required: false
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
@@ -18,7 +22,7 @@ runs:
   using: "docker"
   image: "docker://mondoo/cnspec"
   args:
-    - status
+    - ${{ inputs.args }}
     - --output
     - ${{ inputs.output }}
     - --log-level

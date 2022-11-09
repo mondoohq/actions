@@ -53,8 +53,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: mondoohq/actions/k8s-manifest@main
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
-          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           path: k8s/*.yaml
 ```
 
@@ -71,8 +72,9 @@ jobs:
     - uses: actions/checkout@v3
 
     - uses: mondoohq/actions/terraform-hcl@main
+      env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
       with:
-        service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         path: terraform
 ```
 
@@ -115,8 +117,9 @@ jobs:
           secrets: GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
       - name: Scan Docker Image with Mondoo
         uses: mondoohq/actions/docker-image@main
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
-          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           image: ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
       - name: Build and push
         uses: docker/build-push-action@v3
