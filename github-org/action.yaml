@@ -27,7 +27,7 @@ inputs:
     required: false
   is-cicd:
     description: "Automatically detects the GitHub Action Runs and report results into the CI/CD view"
-    default: "true"
+    default: true
 runs:
   using: "docker"
   image: "docker://mondoo/cnspec"

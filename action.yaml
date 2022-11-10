@@ -6,7 +6,7 @@ branding:
 inputs:
   args:
     description: >-
-      Additional arguments to pass to cnspec Client.
+      Additional arguments to pass to cnspec client.
     required: false
   log-level:
     description: >-
