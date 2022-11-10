@@ -25,7 +25,7 @@ inputs:
     required: false
 runs:
   using: "docker"
-  image: "docker://mondoo/cnspec"
+  image: "docker://ghcr.io/mondoohq/actions:v0"
   args:
     - scan
     - k8s
