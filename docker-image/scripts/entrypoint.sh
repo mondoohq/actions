@@ -7,7 +7,10 @@ set -Eeuo pipefail
 # This results in an error when passed to cnspec, because it only expects one argument
 # Because of that: If the last argument is an empty string, remove it
 if [[ "${@: -1}" == "" ]]; then
+  echo "Removing last argument, because it is empty"
+  echo "before:" "${@}"
   set -- "${@:1:$(($#-1))}"
+  echo "after:" "${@}"
 fi
 
 # Run the action
