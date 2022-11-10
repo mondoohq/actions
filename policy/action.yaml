@@ -23,7 +23,7 @@ inputs:
     required: true
 runs:
   using: "docker"
-  image: "docker://ghcr.io/mondoohq/actions:v0"
+  image: "docker://ghcr.io/mondoohq/actions:v1"
   args:
     - policy
     - add

@@ -28,7 +28,7 @@ inputs:
     required: false
 runs:
   using: "docker"
-  image: "docker://ghcr.io/mondoohq/actions:v0"
+  image: "docker://ghcr.io/mondoohq/actions:v1"
   args:
     - scan
     - k8s
