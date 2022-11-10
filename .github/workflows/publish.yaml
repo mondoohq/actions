@@ -6,7 +6,7 @@ name: Publish Container Images
 # documentation.
 
 on:
-# we need to regularly rebuild the image to get the latest cnspec image
+  # we need to regularly rebuild the image to get the latest cnspec image
   schedule:
     - cron: "42 5 * * *"
   push:
@@ -19,9 +19,9 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-# This image shouldn't change
-# In case it does, perhaps it makes sense to move it to the cnspec repo
-# This tag is referenced in each action.yaml
+  # This image shouldn't change
+  # In case it does, perhaps it makes sense to move it to the cnspec repo
+  # This tag is referenced in each action.yaml
   RELEASE: "v1"
 
 jobs:
