@@ -52,3 +52,4 @@ jobs:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
           path: ".github/test_files/tfstate/state.json"
+          args: "--policy-bundle .github/test_files/tfstate/policy/policy.mql.yaml"

@@ -4,16 +4,16 @@ branding:
   icon: "shield"
   color: "purple"
 inputs:
-  args:
-    description: >-
-      Additional arguments to pass to Mondoo Client.
-    required: false
   organization:
     description: GitHub Organization
     required: true
   token:
     description: GitHub Authentication Token
     required: true
+  args:
+    description: >-
+      Additional arguments to pass to Mondoo Client.
+    required: false
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
