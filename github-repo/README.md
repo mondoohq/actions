@@ -18,6 +18,7 @@ The GitHub repository Action has properties that are passed to the action using 
 
 | Property                      | Required | Default | Description                                                                                                                                                          |
 | ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `args`                        | false    |         | Additional arguments to pass to cnspec client.                                                                                                                       |
 | `repository`                  | true     |         | GitHub Repository eg. `mondoohq/actions`                                                                                                                             |
 | `token`                       | true     |         | GitHub token used for authentication                                                                                                                                 |
 | `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                 |

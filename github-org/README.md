@@ -20,6 +20,7 @@ The GitHub Organization Action has properties which are passed to the underlying
 
 | Property          | Required | Default | Description                                                                                                                                                     |
 | ----------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `args`            | false    |         | Additional arguments to pass to cnspec client.                                                                                                                  |
 | `organization`    | true     |         | GitHub organization to scan eg. `mondoohq` Client.                                                                                                              |
 | `token`           | true     |         | GitHub token used for authentication                                                                                                                            |
 | `log-level`       | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                            |
