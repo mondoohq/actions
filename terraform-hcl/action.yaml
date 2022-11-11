@@ -30,29 +30,5 @@ runs:
   using: "composite"
   steps:
     - uses: "docker://mondoo/cnspec"
-      if: ${{ inputs.args == "" }}
       with:
-        args:
-          - scan
-          - terraform
-          - ${{ inputs.path }}
-          - --output
-          - ${{ inputs.output }}
-          - --score-threshold
-          - ${{ inputs.score-threshold }}
-          - --log-level
-          - ${{ inputs.log-level }}
-    - uses: "docker://mondoo/cnspec"
-      if: ${{ inputs.args != "" }}
-      with:
-        args:
-          - scan
-          - terraform
-          - ${{ inputs.path }}
-          - --output
-          - ${{ inputs.output }}
-          - --score-threshold
-          - ${{ inputs.score-threshold }}
-          - --log-level
-          - ${{ inputs.log-level }}
-          - ${{ inputs.args }}
+        args: scan terraform "${{ inputs.path }}" --output "${{ inputs.output }}" --score-threshold "${{ inputs.score-threshold }}" --log-level "${{ inputs.log-level }}" ${{ inputs.args }}

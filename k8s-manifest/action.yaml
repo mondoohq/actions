@@ -27,17 +27,8 @@ inputs:
     default: "0"
     required: false
 runs:
-  using: "docker"
-  image: "docker://mondoo/cnspec"
-  entrypoint: 'scripts/entrypoint.sh'
-  args:
-    - scan
-    - k8s
-    - ${{ inputs.path }}
-    - --output
-    - ${{ inputs.output }}
-    - --score-threshold
-    - ${{ inputs.score-threshold }}
-    - --log-level
-    - ${{ inputs.log-level }}
-    - ${{ inputs.args }}
+  using: "composite"
+  steps:
+    - uses: "docker://mondoo/cnspec"
+      with:
+        args: scan k8s "${{ inputs.path }}" --output "${{ inputs.output }}" --score-threshold "${{ inputs.score-threshold }}" --log-level "${{ inputs.log-level }}" ${{ inputs.args }}
