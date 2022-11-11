@@ -33,23 +33,8 @@ inputs:
     description: "Automatically detects the GitHub Action Runs and report results into the CI/CD view"
     default: true
 runs:
-  using: "docker"
-  image: "docker://ghcr.io/mondoohq/actions:v1"
-  args:
-    - scan
-    - github
-    - org
-    - ${{ inputs.organization }}
-    - --discover
-    - repository
-    - --token
-    - "${{ inputs.token }}"
-    - --output
-    - ${{ inputs.output }}
-    - --score-threshold
-    - ${{ inputs.score-threshold }}
-    - --log-level
-    - ${{ inputs.log-level }}
-    - --detect-cicd
-    - ${{ inputs.is-cicd }}
-    - ${{ inputs.args }}
+  using: "composite"
+  steps:
+    - uses: "docker://mondoo/cnspec"
+      with:
+        args: scan github org "${{ inputs.organization }}" --discover repository --token "${{ inputs.token }}" --output "${{ inputs.output }}" --score-threshold "${{ inputs.score-threshold }}" --log-level "${{ inputs.log-level }}" --detect-cicd "${{ inputs.is-cicd }}" ${{ inputs.args }}

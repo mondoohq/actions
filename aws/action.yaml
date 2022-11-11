@@ -25,16 +25,8 @@ inputs:
     default: "0"
     required: false
 runs:
-  using: "docker"
-  image: "docker://ghcr.io/mondoohq/actions:v1"
-  args:
-    - scan
-    - aws
-    - ${{ inputs.image }}
-    - --output
-    - ${{ inputs.output }}
-    - --score-threshold
-    - ${{ inputs.score-threshold }}
-    - --log-level
-    - ${{ inputs.log-level }}
-    - ${{ inputs.args }}
+  using: "composite"
+  steps:
+    - uses: "docker://mondoo/cnspec"
+      with:
+        args: scan aws --output "${{ inputs.output }}" --score-threshold "${{ inputs.score-threshold }}" --log-level "${{ inputs.log-level }}" ${{ inputs.args }}

@@ -19,11 +19,8 @@ inputs:
     default: compact
     required: false
 runs:
-  using: "docker"
-  image: "docker://ghcr.io/mondoohq/actions:v1"
-  args:
-    - ${{ inputs.args }}
-    - --output
-    - ${{ inputs.output }}
-    - --log-level
-    - ${{ inputs.log-level }}
+  using: "composite"
+  steps:
+    - uses: "docker://mondoo/cnspec"
+      with:
+        args: ${{ inputs.args }} --output "${{ inputs.output }}" --log-level "${{ inputs.log-level }}"
