@@ -29,7 +29,7 @@ inputs:
 runs:
   using: "docker"
   image: "docker://mondoo/cnspec"
-  pre-entrypoint: 'scripts/entrypoint.sh'
+  entrypoint: 'scripts/entrypoint.sh'
   args:
     - scan
     - docker
