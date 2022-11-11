@@ -27,18 +27,13 @@ inputs:
     default: "0"
     required: false
 runs:
-  using: "docker"
-  image: "docker://mondoo/cnspec"
-  entrypoint: 'scripts/entrypoint.sh'
-  args:
-    - scan
-    - docker
-    - image
-    - ${{ inputs.image }}
-    - --output
-    - ${{ inputs.output }}
-    - --score-threshold
-    - ${{ inputs.score-threshold }}
-    - --log-level
-    - ${{ inputs.log-level }}
-    - ${{ inputs.args }}
+  using: "composite"
+  steps:
+    - uses: "docker://mondoo/cnspec"
+      if: ${{ inputs.args == '' }}
+      with:
+        args: scan docker image "${{ inputs.image }}" --output "${{ inputs.output }}" --score-threshold "${{ inputs.score-threshold }}" --log-level "${{ inputs.log-level }}"
+    - uses: "docker://mondoo/cnspec"
+      if: ${{ inputs.args != '' }}
+      with:
+        args: scan docker image "${{ inputs.image }}" --output "${{ inputs.output }}" --score-threshold "${{ inputs.score-threshold }}" --log-level "${{ inputs.log-level }}" ${{ inputs.args }}
