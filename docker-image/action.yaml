@@ -29,6 +29,7 @@ inputs:
 runs:
   using: "docker"
   image: "docker://mondoo/cnspec"
+  pre-entrypoint: 'scripts/entrypoint.sh'
   args:
     - scan
     - docker
@@ -39,4 +40,5 @@ runs:
     - --score-threshold
     - ${{ inputs.score-threshold }}
     - --log-level
-    - ${{ inputs.log-level }} ${{ inputs.args }} 
+    - ${{ inputs.log-level }}
+    - ${{ inputs.args }}

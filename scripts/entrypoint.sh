@@ -11,4 +11,4 @@ set -eu
 set -- $(echo "${@}")
 
 # Run the action
-cnspec "$@"
+#cnspec "$@"
