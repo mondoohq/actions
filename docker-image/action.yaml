@@ -28,7 +28,7 @@ inputs:
     required: false
 runs:
   using: "docker"
-  image: "docker://ghcr.io/mondoohq/actions:v1"
+  image: "docker://mondoo/cnspec"
   args:
     - scan
     - docker
@@ -39,5 +39,4 @@ runs:
     - --score-threshold
     - ${{ inputs.score-threshold }}
     - --log-level
-    - ${{ inputs.log-level }}
-    - ${{ inputs.args }}
+    - ${{ inputs.log-level }} ${{ inputs.args }} 
