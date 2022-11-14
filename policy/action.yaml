@@ -21,29 +21,9 @@ inputs:
   path:
     description: Path to the policy file.
     required: true
-  service-account-credentials:
-    description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
-    required: true
 runs:
   using: "composite"
   steps:
-    - name: Install Mondoo Client
-      shell: bash
-      run: |
-        echo Installing Mondoo Client...
-        echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
-        curl -sSL https://mondoo.com/install.sh | bash
-    - name: Mondoo status
-      shell: bash
-      run: mondoo status --config mondoo.json
-    - name: Validate Mondoo Policy
-      shell: bash
-      run: mondoo policy validate ${{ inputs.path }}
-    - name: Run mondoo policy add
-      shell: bash
-      run: >
-        mondoo policy add ${{ inputs.path }}
-        --log-level ${{ inputs.log-level }}
-        --output ${{ inputs.output }}
-        ${{ inputs.args }}
-        --config mondoo.json
+    - uses: "docker://mondoo/cnspec"
+      with:
+        args: bundle upload "${{ inputs.path }}" --log-level "${{ inputs.log-level }}" ${{ inputs.args }}
