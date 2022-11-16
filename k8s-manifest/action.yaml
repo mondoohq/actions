@@ -32,6 +32,6 @@ runs:
     - --output
     - ${{ inputs.output }}
     - --score-threshold
-    - ${{ inputs.score-threshold }}#
+    - ${{ inputs.score-threshold }}
     - --log-level
     - ${{ inputs.log-level }}
