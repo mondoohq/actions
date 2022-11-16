@@ -1,0 +1,30 @@
+name: General Mondoo action
+on:
+  pull_request:
+  push:
+    paths:
+      - "action.yaml"
+      - ".github/test_files/**"
+    branches:
+      - "main"
+    tags: ["v*.*.*"]
+
+jobs:
+  general-action-test:
+    runs-on: ubuntu-latest
+    name: Test general Mondoo action
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Show status
+        uses: ./
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        with:
+          args: status
+      - name: Show version
+        uses: ./
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        with:
+          args: version

@@ -4,10 +4,6 @@ branding:
   icon: "shield"
   color: "purple"
 inputs:
-  args:
-    description: >-
-      Additional arguments to pass to Mondoo Client.
-    required: false
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
@@ -28,7 +24,7 @@ inputs:
     required: false
 runs:
   using: "docker"
-  image: "docker://ghcr.io/mondoohq/actions:v1"
+  image: "docker://mondoo/cnspec:7"
   args:
     - scan
     - terraform
@@ -40,4 +36,3 @@ runs:
     - ${{ inputs.score-threshold }}
     - --log-level
     - ${{ inputs.log-level }}
-    - ${{ inputs.args }}

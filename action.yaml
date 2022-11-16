@@ -13,14 +13,9 @@ inputs:
       Sets the log level: error, warn, info, debug, trace (default "info")
     default: info
     required: false
-  output:
-    description: >-
-      Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
-    default: compact
-    required: false
 runs:
   using: "composite"
   steps:
-    - uses: "docker://mondoo/cnspec"
+    - uses: "docker://mondoo/cnspec:7"
       with:
-        args: ${{ inputs.args }} --output "${{ inputs.output }}" --log-level "${{ inputs.log-level }}"
+        args: ${{ inputs.args }} --log-level "${{ inputs.log-level }}"

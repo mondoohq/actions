@@ -14,7 +14,6 @@ The Mondoo Policy Action has properties which are passed to the underlying image
 
 | Property    | Required | Default | Description                                                          |
 | ----------- | -------- | ------- | -------------------------------------------------------------------- |
-| `args`      | false    |         | Additional arguments to pass to Mondoo Client.                       |
 | `log-level` | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info") |
 | `path`      | true     |         | Path to the policy file.                                             |
 

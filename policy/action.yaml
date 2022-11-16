@@ -4,10 +4,6 @@ branding:
   icon: "shield"
   color: "purple"
 inputs:
-  args:
-    description: >-
-      Additional arguments to pass to Mondoo Client.
-    required: false
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
@@ -22,8 +18,11 @@ inputs:
     description: Path to the policy file.
     required: true
 runs:
-  using: "composite"
-  steps:
-    - uses: "docker://mondoo/cnspec"
-      with:
-        args: bundle upload "${{ inputs.path }}" --log-level "${{ inputs.log-level }}" ${{ inputs.args }}
+  using: "docker"
+  image: "docker://mondoo/cnspec:7"
+  args:
+    - bundle
+    - upload
+    - ${{ inputs.path }}
+    - --log-level
+    - ${{ inputs.log-level }}

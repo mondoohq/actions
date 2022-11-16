@@ -10,7 +10,6 @@ The Kubernetes Manifest Action has properties which are passed to the underlying
 
 | Property          | Required | Default | Description                                                                                                                                                     |
 | ----------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `args`            | false    |         | Additional arguments to pass to cnspec client.                                                                                                                  |
 | `log-level`       | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                            |
 | `output`          | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                              |
 | `path`            | true     |         | Path to Kubernetes manifest file.                                                                                                                               |

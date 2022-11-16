@@ -5,10 +5,6 @@ branding:
   icon: "shield"
   color: "purple"
 inputs:
-  args:
-    description: >-
-      Additional arguments to pass to Mondoo Client.
-    required: false
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
@@ -25,8 +21,14 @@ inputs:
     default: "0"
     required: false
 runs:
-  using: "composite"
-  steps:
-    - uses: "docker://mondoo/cnspec"
-      with:
-        args: scan aws --output "${{ inputs.output }}" --score-threshold "${{ inputs.score-threshold }}" --log-level "${{ inputs.log-level }}" ${{ inputs.args }}
+  using: "docker"
+  image: "docker://mondoo/cnspec:7"
+  args:
+    - scan
+    - aws
+    - --output
+    - ${{ inputs.output }}
+    - --score-threshold
+    - ${{ inputs.score-threshold }}
+    - --log-level
+    - ${{ inputs.log-level }}
