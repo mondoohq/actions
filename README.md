@@ -9,7 +9,6 @@ A set of GitHub Action for using Mondoo to check for vulnerabilities and misconf
 - [Kubernetes](k8s) - Scan Kubernetes Clusters post-deploy for continuous auditing and compliance of the cluster.
 - [Kubernetes Manifest](k8s-manifest) - Scan Kubernetes manifests for misconfigurations before applying changes to the cluster.
 - [Policy](policy) - Publish Mondoo policies to Mondoo Platform using GitHub Actions.
-- [Setup](setup) - Install and configure Mondoo into any existing GitHub Action workflow.
 - [Terraform HCL](terraform-hcl) - Scan HashiCorp Terraform HCL code for security misconfigurations.
 - [Terraform Plan](terraform-plan) - Scan HashiCorp Terraform Plan for security misconfigurations.
 - [Terraform State](terraform-state) - Scan HashiCorp Terraform State output for security misconfigurations.
@@ -53,9 +52,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: mondoohq/actions/k8s-manifest@main
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
-          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
-          path: k8s/*.yaml
+          path: k8s/manifest.yaml
 ```
 
 Simple scan of Terraform files:
@@ -71,8 +71,9 @@ jobs:
     - uses: actions/checkout@v3
 
     - uses: mondoohq/actions/terraform-hcl@main
+      env:
+        MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
       with:
-        service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         path: terraform
 ```
 
@@ -115,8 +116,9 @@ jobs:
           secrets: GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
       - name: Scan Docker Image with Mondoo
         uses: mondoohq/actions/docker-image@main
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
-          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           image: ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
       - name: Build and push
         uses: docker/build-push-action@v3

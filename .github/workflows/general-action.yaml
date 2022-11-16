@@ -1,25 +1,30 @@
-name: K8s Manifest Scanning
+name: General Mondoo action
 on:
   pull_request:
   push:
     paths:
       - "action.yaml"
-      - "k8s-manifest/*"
       - ".github/test_files/**"
     branches:
       - "main"
     tags: ["v*.*.*"]
 
 jobs:
-  k8s-manifest-tests:
+  general-action-test:
     runs-on: ubuntu-latest
-    name: Test k8s manifest scanning
+    name: Test general Mondoo action
     steps:
       - uses: actions/checkout@v3
 
-      - name: Scan k8s manifest
-        uses: ./k8s-manifest
+      - name: Show status
+        uses: ./
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
-          path: ./.github/test_files/k8s-manifest.yaml
+          args: status
+      - name: Show version
+        uses: ./
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        with:
+          args: version

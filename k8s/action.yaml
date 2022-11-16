@@ -4,10 +4,6 @@ branding:
   icon: "shield"
   color: "purple"
 inputs:
-  args:
-    description: >-
-      Additional arguments to pass to Mondoo Client.
-    required: false
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
@@ -23,27 +19,15 @@ inputs:
       Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
     default: "0"
     required: false
-  service-account-credentials:
-    description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
-    required: true
 runs:
-  using: "composite"
-  steps:
-    - name: Install Mondoo Client
-      shell: bash
-      run: |
-        echo Installing Mondoo Client...
-        echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
-        curl -sSL https://mondoo.com/install.sh | bash
-    - name: Mondoo status
-      shell: bash
-      run: mondoo status --config mondoo.json
-    - name: Run mondoo scan ${{ inputs.asset-type }}
-      shell: bash
-      run: >
-        mondoo scan k8s 
-        --log-level ${{ inputs.log-level }}
-        --output ${{ inputs.output }}
-        --score-threshold ${{ inputs.score-threshold }}
-        ${{ inputs.args }}
-        --config mondoo.json
+  using: "docker"
+  image: "docker://mondoo/cnspec:7"
+  args:
+    - scan
+    - k8s
+    - --output
+    - ${{ inputs.output }}
+    - --score-threshold
+    - ${{ inputs.score-threshold }}
+    - --log-level
+    - ${{ inputs.log-level }}

@@ -6,34 +6,16 @@ branding:
 inputs:
   args:
     description: >-
-      Additional arguments to pass to Mondoo Client.
+      Additional arguments to pass to cnspec client.
     required: false
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
     default: info
     required: false
-  output:
-    description: >-
-      Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
-    default: compact
-    required: false
-  service-account-credentials:
-    description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
-    required: true
 runs:
   using: "composite"
   steps:
-    - name: Install Mondoo Client
-      run: |
-        echo Installing Mondoo Client...
-        echo ${{ inputs.service-account-credentials }} | base64 -d > mondoo.json
-        curl -sSL https://mondoo.com/install.sh | bash
-      shell: bash
-    - name: Run Mondoo
-      shell: bash
-      run: >
-        mondoo ${{ inputs.args }}
-        --output ${{ inputs.output }}
-        --log-level ${{ inputs.log-level }}
-        --config mondoo.json
+    - uses: "docker://mondoo/cnspec:7"
+      with:
+        args: ${{ inputs.args }} --log-level "${{ inputs.log-level }}"

@@ -6,13 +6,17 @@ A GitHub Action for using Mondoo to check for misconfigurations in your AWS acco
 
 The Mondoo AWS Action has properties which are passed to the underlying image. These are passed to the action using `with`.
 
-| Property                      | Required | Default | Description                                                                                                                                                          |
-| ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `args`                        | false    |         | Additional arguments to pass to Mondoo Client.                                                                                                                       |
-| `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                 |
-| `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                   |
-| `score-threshold`             | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).      |
-| `service-account-credentials` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) used to authenticate with Mondoo Platform |
+| Property          | Required | Default | Description                                                                                                                                                     |
+| ----------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `log-level`       | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                            |
+| `output`          | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                              |
+| `score-threshold` | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan). |
+
+Additionally, you need to specify the service account credentials as an environment variable.
+
+| Environment            | Required | Default | Description                                                                                                                                                          |
+| ---------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) used to authenticate with Mondoo Platform |
 
 ## Scan AWS account example
 
@@ -36,8 +40,9 @@ jobs:
           role-session-name: MySessionName
 
       - uses: mondoohq/actions/aws@main
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
-          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           output: compact
           score-threshold: 0
 ```

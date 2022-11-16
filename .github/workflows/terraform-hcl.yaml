@@ -18,6 +18,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Scan Terraform HCL
         uses: ./terraform-hcl
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
-          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           path: ./.github/test_files/tf
