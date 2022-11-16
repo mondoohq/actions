@@ -32,7 +32,7 @@ on:
     paths:
       - "k8s/deployment.yaml"
 jobs:
-  install:
+  scan-k8s-manifest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

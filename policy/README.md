@@ -34,7 +34,7 @@ on:
     paths:
       - "policy/policy.yml"
 jobs:
-  install:
+  upload:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

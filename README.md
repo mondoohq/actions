@@ -47,7 +47,7 @@ on:
     paths:
       - "k8s/*.yaml"
 jobs:
-  install:
+  scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
