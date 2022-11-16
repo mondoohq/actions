@@ -42,7 +42,5 @@ jobs:
         uses: ./docker-image
         with:
           image: ${{env.APP}}:${{env.VERSION}}
-          args: --score-threshold "10" ${{env.EMPTY_VAR}}
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
-          EMPTY_VAR: ""
