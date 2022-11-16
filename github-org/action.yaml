@@ -7,9 +7,6 @@ inputs:
   organization:
     description: GitHub Organization
     required: true
-  token:
-    description: GitHub Authentication Token
-    required: true
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
@@ -38,8 +35,6 @@ runs:
     - ${{ inputs.organization }}
     - --discover
     - repository
-    - --token
-    - ${{ inputs.token }}
     - --output
     - ${{ inputs.output }}
     - --score-threshold

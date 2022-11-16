@@ -7,9 +7,6 @@ inputs:
   repository:
     description: GitHub Repository
     required: true
-  token:
-    description: GitHub Authentication Token
-    required: true
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
@@ -36,8 +33,6 @@ runs:
     - github
     - repo
     - ${{ inputs.repository }}
-    - --token
-    - ${{ inputs.token }}
     - --output
     - ${{ inputs.output }}
     - --score-threshold

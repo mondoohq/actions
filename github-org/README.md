@@ -21,17 +21,17 @@ The GitHub Organization Action has properties which are passed to the underlying
 | Property          | Required | Default | Description                                                                                                                                                     |
 | ----------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `organization`    | true     |         | GitHub organization to scan eg. `mondoohq`.                                                                                                                     |
-| `token`           | true     |         | GitHub token used for authentication                                                                                                                            |
 | `log-level`       | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                            |
 | `output`          | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                              |
 | `score-threshold` | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan). |
 | `is-cicd`         | false    | true    | Flag to disable the auto-detection for CI/CD runs. If deactivated it reports into the Fleet view                                                                |
 
-Additionally, you need to specify the service account credentials as an environment variable.
+Additionally, you need to specify the service account and GitHub credentials as an environment variable.
 
 | Environment            | Required | Default | Description                                                                                                                                                          |
 | ---------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) used to authenticate with Mondoo Platform |
+| `GITHUB_TOKEN`         | true     |         | GitHub token used for authentication                                                                                                                                 |
 
 ## Scan GitHub organization
 
@@ -49,6 +49,7 @@ jobs:
       - uses: mondoohq/actions/k8s@main
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           organization: ${{ GITHUB_REPOSITORY_OWNER }}
 ```

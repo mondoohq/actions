@@ -26,11 +26,12 @@ The GitHub repository Action has properties that are passed to the action using 
 | `service-account-credentials` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) used to authenticate with Mondoo Platform |
 | `is-cicd`                     | false    | true    | Flag to disable the auto-detection for CI/CD runs. If deactivated it reports into the Fleet view                                                                     |
 
-Additionally, you need to specify the service account credentials as an environment variable.
+Additionally, you need to specify the service account and GitHub credentials as an environment variable.
 
 | Environment            | Required | Default | Description                                                                                                                                                          |
 | ---------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) used to authenticate with Mondoo Platform |
+| `GITHUB_TOKEN`         | true     |         | GitHub token used for authentication                                                                                                                                 |
 
 ## Scan GitHub Repository
 
@@ -48,6 +49,7 @@ jobs:
       - uses: mondoohq/actions/k8s@main
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           repository: ${{ GITHUB_REPOSITORY }}
 ```
