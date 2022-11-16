@@ -55,7 +55,7 @@ jobs:
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
-          path: k8s/*.yaml
+          path: k8s/manifest.yaml
 ```
 
 Simple scan of Terraform files:
