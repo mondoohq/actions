@@ -42,7 +42,7 @@ name: Scan GitHub repository
 on: push
 
 jobs:
-  scan-github-org:
+  scan-github-repo:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

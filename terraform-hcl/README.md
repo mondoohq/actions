@@ -30,11 +30,12 @@ on:
     paths:
       - "terraform/main.tf"
 jobs:
-  steps:
-    - uses: actions/checkout@v3
-    - uses: mondoohq/actions/terraform-hcl@main
-      env:
-        MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
-      with:
-        path: terraform
+  scan-tf:
+    steps:
+      - uses: actions/checkout@v3
+      - uses: mondoohq/actions/terraform-hcl@main
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        with:
+          path: terraform
 ```
