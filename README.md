@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: mondoohq/actions/k8s-manifest@main
+      - uses: mondoohq/actions/k8s-manifest@${env.VERSION}
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
@@ -70,7 +70,7 @@ jobs:
   steps:
     - uses: actions/checkout@v3
 
-    - uses: mondoohq/actions/terraform-hcl@main
+    - uses: mondoohq/actions/terraform-hcl@${env.VERSION}
       env:
         MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
       with:
@@ -115,7 +115,7 @@ jobs:
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:${{env.VERSION}}
           secrets: GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
       - name: Scan Docker Image with Mondoo
-        uses: mondoohq/actions/docker-image@main
+        uses: mondoohq/actions/docker-image@${env.VERSION}
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
