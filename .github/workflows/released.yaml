@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version that was released'
+        description: "Version that was released"
         required: true
-        default: 'v1.2.3'
+        default: "v1.2.3"
 
 jobs:
   update-version:
@@ -17,7 +17,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
         with:
-          ref: 'main'
+          ref: "main"
           fetch-depth: 0
       - name: Version from Workflow Dispatch
         if: github.event_name == 'workflow_dispatch'
