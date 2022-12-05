@@ -34,7 +34,7 @@ jobs:
             echo "Invalid version: $VERSION"
             exit 1
           fi
-          echo "$VERSION" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: Find and Replace
         run: |
           find . -type f -name 'README.md' -exec sed -i -E "s/(mondoohq\/.+@)(..env.VERSION.|main|v[0-9]+\.[0-9]+\.[0-9]+)/\1${VERSION}/g" {} \;
