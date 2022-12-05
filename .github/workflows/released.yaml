@@ -37,7 +37,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: Find and Replace
         run: |
-          find . -type f -name 'README.md' -exec sed -i -E "s/(mondoohq\/.+@)(..env.VERSION.|main|v[0-9]+\.[0-9]+\.[0-9]+)/\1${VERSION}/g" {} \;
+          find . -type f -name 'README.md' -exec sed -i -E "s/(mondoohq\/.+@).+$/\1${VERSION}/g" {} \;
       - name: Commit READMEs
         run: |
           git add .
