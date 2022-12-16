@@ -14,7 +14,6 @@ jobs:
     name: Test GitHub repo scanning
     steps:
       - uses: actions/checkout@v3
-
 # currently broken, because of https://github.com/mondoohq/cnspec/issues/239
 #      - name: Scan GitHub repo
 #        uses: ./github-repo

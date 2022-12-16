@@ -23,3 +23,9 @@ jobs:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
           path: ./.github/test_files/k8s-manifest.yaml
+      - name: Scan k8s directory
+        uses: ./k8s-manifest
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        with:
+          path: ./.github/test_files/

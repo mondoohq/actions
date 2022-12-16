@@ -25,6 +25,9 @@ inputs:
   is-cicd:
     description: "Automatically detects the GitHub Action Runs and report results into the CI/CD view"
     default: true
+  service-account-credentials:
+    description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
+    required: false
 runs:
   using: "docker"
   image: "docker://mondoo/cnspec:7"
@@ -41,3 +44,5 @@ runs:
     - ${{ inputs.log-level }}
     - --detect-cicd
     - ${{ inputs.is-cicd }}
+  env:
+    MONDOO_CONFIG_BASE64: ${{ inputs.service-account-credentials }}
