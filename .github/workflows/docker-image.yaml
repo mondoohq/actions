@@ -36,8 +36,8 @@ jobs:
         uses: ./docker-image
         with:
           image: ${{env.APP}}:${{env.VERSION}}
-        env:
-          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+
       - name: Scan Docker Image
         uses: ./docker-image
         with:
