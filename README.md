@@ -134,16 +134,21 @@ jobs:
 ```
 
 ## Suggested setup for public repos
+
 There are some caveats for public repositories that should be taken into account when setting up actions that should run for forks. Below we describe the default GitHub behaviour with examples, list the potential risks with it and then provide our suggested solution.
 
 ### GitHub default behaviour
+
 Our GitHub actions require a secret (the Mondoo service account) to be able to run a scan. By default, workflows from forks do not have access to the secrets in the upstream repository. However, in certain cases it might be required that a secret is made accessible for forks. For example, a repository that uses our actions to run security and misconfiguration checks would probably want to do so for forks as well.
 
 ### The behaviour we want
+
 We would like to explicitly approve every change in PR before it is being executed with access to our repository's secrets. Only after all changes are reviewed we can allow the PR to run with such an access.
 
 ### The solution
+
 Assume we have the following workflow that runs for every PR:
+
 ```yaml
 name: K8s Manifest Scanning
 on:
@@ -165,6 +170,7 @@ jobs:
 ```
 
 It would not work for forks because we are trying to access `${{ secrets.MONDOO_SERVICE_ACCOUNT }}`. To be able to support this use-case first, let's extract the job into a reusable workflow.
+
 ```yaml
 name: K8s Manifest Scanning
 on:
@@ -189,6 +195,7 @@ jobs:
 ```
 
 Then we need to adjust the workflow that runs for our PRs to use the reusable workflow. We also need to make sure it runs only for non-fork PRs.
+
 ```yaml
 name: K8s Manifest Scanning
 on:
@@ -206,6 +213,7 @@ jobs:
 ```
 
 Then we need to define another workflow that would run only for forked PRs. We also want to make sure that it will run after an explicit approval. For that we will use the labels on the PR itself. If the `run tests` label is present, we run the tests and remove it. Otherwise, we fail the pipeline because the tests have not run and we add a comment to the PR that states that. In this way, we make sure that the tests are always executed (and not forgotten) and we also have granular control of when they are run.
+
 ```yaml
 name: K8s Manifest Scanning (forks)
 
