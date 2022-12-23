@@ -134,7 +134,7 @@ jobs:
 ```
 
 ## Suggested setup for public repos
-There are some caveats for public repositories that should be taken into account when setting up actions that should run for forks. Below we describe the defualt GitHub behaviour with examples, list the potential risks with it and then provide our suggested solution.
+There are some caveats for public repositories that should be taken into account when setting up actions that should run for forks. Below we describe the default GitHub behaviour with examples, list the potential risks with it and then provide our suggested solution.
 
 ### GitHub default behaviour
 Our GitHub actions require a secret (the Mondoo service account) to be able to run a scan. By default, workflows from forks do not have access to the secrets in the upstream repository. However, in certain cases it might be required that a secret is made accessible for forks. For example, a repository that uses our actions to run security and misconfiguration checks would probably want to do so for forks as well.
