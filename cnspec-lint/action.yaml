@@ -1,0 +1,26 @@
+name: "Lint cnspec policies"
+author: "mondoohq"
+description: "This action runs `cnspec bundle lint` and outputs the results as Sarif report so that the results can easily be shows in GitHub code scanning results"
+branding:
+  icon: "shield"
+  color: "purple"
+inputs:
+  path:
+    description: "Specifies the root path of the bundles"
+    required: true
+    default: "."
+  output-file:
+    description: "Specifies the output path for the sarif report file"
+    required: true
+    default: "results.sarif"
+runs:
+  using: "docker"
+  image: "chrisrock/cnspec:latest"
+  args:
+    - bundle
+    - lint
+    - ${{ inputs.path }}
+    - --output
+    - sarif
+    - --output-file
+    - ${{ inputs.output-file }}
