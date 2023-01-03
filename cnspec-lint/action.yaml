@@ -1,6 +1,6 @@
 name: "Lint cnspec policies"
 author: "mondoohq"
-description: "This action runs `cnspec bundle lint` and outputs the results as Sarif report so that the results can easily be shows in GitHub code scanning results"
+description: "This action runs `cnspec bundle lint` and outputs the results as SARIF report so that the results can easily be shown in GitHub code scanning results"
 branding:
   icon: "shield"
   color: "purple"
@@ -10,7 +10,7 @@ inputs:
     required: true
     default: "."
   output-file:
-    description: "Specifies the output path for the sarif report file"
+    description: "Specifies the output path for the SARIF report file"
     required: true
     default: "results.sarif"
 runs:

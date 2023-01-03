@@ -1,6 +1,6 @@
 # Mondoo cnspec lint Action
 
-A [GitHub Action](https://github.com/features/actions) for linting cnspec policy bundles with Sarif output.
+A [GitHub Action](https://github.com/features/actions) for linting cnspec policy bundles with SARIF output.
 
 ## Properties
 
@@ -9,7 +9,7 @@ The cnspec lint Action has properties that are passed to the action using `with`
 | Property      | Required | Default         | Description                                           |
 | ------------- | -------- | --------------- | ----------------------------------------------------- |
 | `path`        | true     | `.`             | Specifies the root path of the bundles .              |
-| `output-file` | true     | `results.sarif` | Specifies the output path for the sarif report file'. |
+| `output-file` | true     | `results.sarif` | Specifies the output path for the SARIF report file'. |
 
 ## Scan policy bundles for lint errors
 
