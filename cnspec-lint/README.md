@@ -1,6 +1,6 @@
 # Mondoo cnspec lint Action
 
-A [GitHub Action](https://github.com/features/actions) for testing [HashiCorp Terraform](https://terraform.io) [HCL code](https://www.terraform.io/language/syntax/configuration) for security misconfigurations.
+A [GitHub Action](https://github.com/features/actions) for linting cnspec policy bundles with Sarif output.
 
 ## Properties
 
@@ -9,7 +9,7 @@ The cnspec lint Action has properties that are passed to the action using `with`
 | Property      | Required | Default         | Description                                           |
 | ------------- | -------- | --------------- | ----------------------------------------------------- |
 | `path`        | true     | `.`             | Specifies the root path of the bundles .              |
-| `output-path` | true     | `results.sarif` | Specifies the output path for the sarif report file'. |
+| `output-file` | true     | `results.sarif` | Specifies the output path for the sarif report file'. |
 
 ## Scan policy bundles for lint errors
 
@@ -34,7 +34,7 @@ jobs:
         uses: github/mondoohq/actions/cnspec-lint
         with:
           path: .
-          output: "results.sarif"
+          output-file: "results.sarif"
       - name: Upload SARIF results file
         uses: github/codeql-action/upload-sarif@v2
         with:
