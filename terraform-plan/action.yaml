@@ -1,5 +1,5 @@
 name: "Mondoo Terraform Plan GitHub Action"
-description: "Scan HashiCorp Terraform Plan for misconfigurations with cnspec"
+description: "Scan HashiCorp Terraform Plan file for misconfigurations with Mondoo"
 branding:
   icon: "shield"
   color: "purple"
@@ -15,11 +15,11 @@ inputs:
     default: compact
     required: false
   directory:
-    description: Directory with Terraform code
+    description: Path to the Terraform working directory (default "terraform").
     default: terraform
     required: false
   plan-file:
-    description: Name of plan file to scan (default "plan.json")
+    description: Name of plan file (default "plan.json").
     default: plan.json
     required: false
   score-threshold:
