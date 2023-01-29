@@ -1,5 +1,5 @@
 name: "Mondoo Terraform Plan GitHub Action"
-description: "Scan HashiCorp Terraform Plan for misconfigurations with Mondoo"
+description: "Scan HashiCorp Terraform Plan for misconfigurations with cnspec"
 branding:
   icon: "shield"
   color: "purple"
@@ -14,9 +14,14 @@ inputs:
       Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
     default: compact
     required: false
-  path:
-    description: Path to the Terraform working directory.
-    required: true
+  directory:
+    description: Directory with Terraform code
+    default: terraform
+    required: false
+  plan-file:
+    description: Name of plan file to scan (default "plan.json")
+    default: plan.json
+    required: false
   score-threshold:
     description: >-
       Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
@@ -32,7 +37,7 @@ runs:
     - scan
     - terraform
     - plan
-    - ${{ inputs.path }}
+    - ${{ inputs.directory }}/${{ inputs.plan-file }}
     - --output
     - ${{ inputs.output }}
     - --score-threshold
