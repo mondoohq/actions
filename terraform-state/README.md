@@ -34,7 +34,7 @@ jobs:
   scan-tf:
     steps:
       - uses: actions/checkout@v3
-      - uses: mondoohq/actions/terraform-state@v0.9.0
+      - uses: mondoohq/actions/terraform-state@v0.9.2
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
