@@ -4,18 +4,18 @@ branding:
   icon: "shield"
   color: "purple"
 inputs:
+  action:
+    description: >-
+      Sets the action for cnspec bundle command: publish, validate (default "validate")
+    default: validate
+    required: false
   log-level:
     description: >-
       Sets the log level: error, warn, info, debug, trace (default "info")
     default: info
     required: false
-  output:
-    description: >-
-      Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
-    default: compact
-    required: false
   path:
-    description: Path to the policy file.
+    description: Path to policy bundle
     required: true
   service-account-credentials:
     description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
@@ -25,7 +25,7 @@ runs:
   image: "docker://mondoo/cnspec:7"
   args:
     - bundle
-    - upload
+    - ${{ inputs.action }}
     - ${{ inputs.path }}
     - --log-level
     - ${{ inputs.log-level }}

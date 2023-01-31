@@ -1,6 +1,6 @@
-# Mondoo Policy Action
+# Mondoo policy bundle action
 
-A GitHub Action for publishing Mondoo policies to Mondoo Platform.
+A GitHub Action for publishing cnspec policy bundles to Mondoo Platform.
 
 ## Service Account Permissions
 
@@ -12,11 +12,12 @@ Adding policies to Mondoo Platform requires a [Mondoo service account](https://m
 
 The Mondoo Policy Action has properties which are passed to the underlying image. These are passed to the action using `with`.
 
-| Property                      | Required | Default | Description                                                                                                                                                                                                                      |
-| ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                                                                             |
-| `path`                        | true     |         | Path to the policy file.                                                                                                                                                                                                         |
-| `service-account-credentials` | false    |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
+| Property                      | Required | Default  | Description                                                                                                                                                                                                                      |
+| ----------------------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `action`                      | false    | validate | Sets the action for cnspec bundle command: publish, validate (default "validate")                                                                                                                                                |
+| `log-level`                   | false    | info     | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                                                                             |
+| `path`                        | true     |          | Path to the policy file.                                                                                                                                                                                                         |
+| `service-account-credentials` | false    |          | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
 
 Additionally, you need to specify the service account credentials as an environment variable.
 
@@ -26,22 +27,43 @@ Additionally, you need to specify the service account credentials as an environm
 
 ## Add a policy to Mondoo Platform
 
-You can use the Action as follows:
+The following example runs `cnspec bundle validate` on specified policies on all pull requests. Once a PR is approved and merged the workflow will run `cnspec bundle publish` on specified policies.
 
 ```yaml
 name: Mondoo Policy Add Example
 on:
   push:
     paths:
-      - "policy/policy.yml"
+      - "policy/policy.mql.yaml"
+
 jobs:
-  upload:
+  cnspec-policy-validate:
+    name: Validate cnspec policy bundle
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: mondoohq/actions/policy@v0.9.2
+      - uses: mondoohq/actions/policy@scottford/updates-policy-action
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
-          path: policy/policy.yml
+          action: validate
+          path: policy/policy.mql.yaml
+  cnspec-publish-bundle:
+    name: Publish cnspec policy bundle
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: mondoohq/actions/policy@scottford/updates-policy-action
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        with:
+          action: validate
+          path: policy/policy.mql.yaml
+      - uses: mondoohq/actions/policy@scottford/updates-policy-action
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        with:
+          action: publish
+          path: policy/policy.mql.yaml
 ```
