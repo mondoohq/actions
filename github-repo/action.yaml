@@ -42,7 +42,6 @@ runs:
     - ${{ inputs.score-threshold }}
     - --log-level
     - ${{ inputs.log-level }}
-    - --detect-cicd
-    - ${{ inputs.is-cicd }}
+    - --detect-cicd=${{ inputs.is-cicd }}
   env:
     MONDOO_CONFIG_BASE64: ${{ inputs.service-account-credentials }}

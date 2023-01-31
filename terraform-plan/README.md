@@ -41,7 +41,6 @@ jobs:
   generate-and-scan-terraform-plan:
     steps:
       - uses: actions/checkout@v3
-
     - uses: hashicorp/setup-terraform@v2
       with:
         terraform_wrapper: false
