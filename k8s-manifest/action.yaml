@@ -27,7 +27,7 @@ inputs:
     required: false
 runs:
   using: "docker"
-  image: "docker://mondoo/cnspec:7"
+  image: "docker://mondoo/cnspec:8"
   args:
     - scan
     - k8s
