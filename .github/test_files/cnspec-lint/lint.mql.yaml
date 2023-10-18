@@ -10,7 +10,7 @@ policies:
       another-key: another-value
     specs:
       - asset_filter:
-          query: platform.family.contains(_ == 'unix')
+          query: platform.family.contains('unix')
         scoring_queries:
           query1:
           query2:
