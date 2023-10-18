@@ -4,7 +4,6 @@ A GitHub Action for using Mondoo to scan a GitHub Organization for security misc
 
 ***Organizations with a large number of repositories (20+) are likely to hit GitHub's API Rate Limit causing this action to fail. Please refer to the 'Using App Tokens' section below!***
 
-
 ## Permissions
 
 Depending on the amount that should be covered, you need to provide the proper permissions to the token. Since Mondoo only reads values, only read only permissions are required.
