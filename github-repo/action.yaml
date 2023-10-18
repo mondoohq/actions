@@ -1,5 +1,5 @@
-name: "Mondoo Github Repository Action"
-description: "Scan Github repository for misconfigurations with Mondoo"
+name: "Mondoo GitHub Repository Action"
+description: "Scan GitHub repository for misconfigurations with Mondoo"
 branding:
   icon: "shield"
   color: "purple"

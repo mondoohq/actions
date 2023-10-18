@@ -1,4 +1,12 @@
 buildx
+cla
 codeql
+dfd
+healthz
 myapp
+nginx
+notsigned
+prcomment
+readyz
+softprops
 tibdex

@@ -1,4 +1,4 @@
-# Detect common combinations of valid words that are in fact invalid. 
+# Detect common combinations of valid words that are in fact invalid.
 # Useful for brand capitalizations
 
 #
@@ -8,6 +8,10 @@
 # s.b. Mondoo Platform
 \sthe Mondoo Platform\b
 \sMondoo platform\b
+
+# s.b. Compliance Hub
+\scompliance hub\b
+\sCompliance hubplatform\b
 
 #
 # Industry Terms
@@ -43,6 +47,17 @@
 #
 # Product Names
 #
+
+# s.b. Jira
+\bJIRA\b
+
+# s.b. MariaDB
+\bMaria DB\b
+\bmariaDB\b
+# \bmariaDb\b causes failures in MQL queries
+
+# s.b. PostgreSQL
+\bPostgreSql\b
 
 # s.b. Firefox
 \bFireFox\b
@@ -87,6 +102,7 @@
 
 # s.b. Red Hat
 \bRedHat\b
+\bRedhat\b
 
 # s.b. AlmaLinux
 \bAlma Linux\b
@@ -158,6 +174,10 @@
 # s.b. vCenter
 \bVcenter\b
 \bVCenter\b
+
+# s.b. vSphere
+\bVsphere\b
+\bVSphere\b
 
 # s.b. ESXi
 \bEsxi\b
@@ -370,10 +390,9 @@
 \bCloudBuild\b
 \bCloud build\b
 
-# disabled for now in this repo due to false positives
 # s.b. Cloud Run
-# \bCloudRun\b
-# \bCloud run\b
+\bCloudRun\b
+\bCloud run\b
 
 #
 # Azure Products
@@ -381,7 +400,7 @@
 
 # s.b. Key Vault
 \bKey vault\b
-# \bKeyVault\b # disabled for now in this repo due to false positives
+\bKeyVault\b
 
 # s.b. Ampere
 \bampere\b
@@ -418,6 +437,8 @@
 
 # s.b. Cosmos DB
 \bCosmosDB\b
+\bCosmoDB\b
+\bCosmo DB\b
 
 # s.b. SignalR Service
 \bSignalR service\b
