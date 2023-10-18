@@ -22,10 +22,10 @@ The GitHub Organization Action has properties which are passed to the underlying
 
 | Property                      | Required | Default | Description                                                                                                                                                                                                                      |
 | ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `organization`                | true     |         | GitHub organization to scan eg. `mondoohq`.                                                                                                                                                                                     |
+| `organization`                | true     |         | GitHub organization to scan eg. `mondoohq`.                                                                                                                                                                                      |
 | `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                                                                             |
 | `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                                                                               |
-| `score-threshold`             | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).                                                                 |
+| `score-threshold`             | false    | 0       | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).                                                                  |
 | `is-cicd`                     | false    | true    | Flag to disable the auto-detection for CI/CD runs. If deactivated it reports into the Fleet view                                                                                                                                 |
 | `service-account-credentials` | false    |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
 
@@ -63,7 +63,7 @@ jobs:
 
 To leverage an App Token:
 
-1. As a GitHub Organization Owner, go to your Organizational Settings and then under "Developer Settings" select "GitHub Apps". The URL is `https://github.com/organizations/<org_name>/settings/apps`
+1. As a GitHub Organization Owner, go to your Organizational Settings and then under "Developer Settings" select "GitHub Apps". The URL is `https://github.com/organizations/<org_name>/settings/apps`.
 2. Select **New GitHub App**.
 3. Name the app what ever you like, we suggest "Mondoo Org Scan (Internal)" and give it a description.
 4. Set the **Homepage URL** to anything, we suggest "https://mondoo.com".
@@ -71,7 +71,7 @@ To leverage an App Token:
 6. Set the permissions for your Repo, Org and Account to allow Mondoo to scan the resources.
 7. Select the **Only on this account** button and then select **Create GitHub App** to finish.
 8. Record the App ID, then scroll down and select the **Generate a private key** button. This will download the private key that you will use later.
-9. Now, select **Install App**  and then **Install** next to the Org your planning to scan. You can choose All Repositories or only the rep running this action, then select **Install**.
+9. Now, select **Install App** and then **Install** next to the Org your planning to scan. You can choose All Repositories or only the rep running this action, then select **Install**.
 10. Finally, update your action to include the github-app-token action and use it's output token. This will require you to add the Apps ID and Private Key to Action Secrets. The new action will look like:
 
 ```
