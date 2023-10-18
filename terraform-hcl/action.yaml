@@ -27,7 +27,7 @@ inputs:
     required: false
 runs:
   using: "docker"
-  image: "docker://mondoo/cnspec:8"
+  image: "docker://mondoo/cnspec:9"
   args:
     - scan
     - terraform

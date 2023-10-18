@@ -15,7 +15,7 @@ inputs:
     default: "results.sarif"
 runs:
   using: "docker"
-  image: "docker://mondoo/cnspec:8"
+  image: "docker://mondoo/cnspec:9"
   args:
     - bundle
     - lint
