@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Terraform scanning
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Scan Terraform HCL
         uses: ./terraform-hcl
         env:

@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test GitHub repo scanning
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Scan GitHub repo
         uses: ./github-repo
         env:
