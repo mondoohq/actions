@@ -2,7 +2,7 @@
 
 A GitHub Action for using Mondoo to scan a GitHub Organization for security misconfigurations such as branch protection, CI tests, required code-review, and more. This Action can be used to audit individual GitHub repositories. This Action can be easily used in [.github or .github-private](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/customizing-your-organizations-profile) repositories.
 
-***Organizations with a large number of repositories (20+) are likely to hit GitHub's API Rate Limit causing this action to fail.  Please refer to the 'Using App Tokens' section below!***
+***Organizations with a large number of repositories (20+) are likely to hit GitHub's API Rate Limit causing this action to fail. Please refer to the 'Using App Tokens' section below!***
 
 
 ## Permissions
@@ -64,8 +64,8 @@ GitHub implements an [aggressive API rate limit](https://docs.github.com/en/rest
 
 To leverage an App Token:
 
-1. As a GitHub Organization Owner, go to your Organizational Settings and then under "Developer Settings" select "Github Apps". The URL is ```https://github.com/organizations/<org_name>/settings/apps```
-2. Click the _New Github App_ button
+1. As a GitHub Organization Owner, go to your Organizational Settings and then under "Developer Settings" select "GitHub Apps". The URL is ```https://github.com/organizations/<org_name>/settings/apps```
+2. Click the _New GitHub App_ button
 3. Name the app what ever you like, we suggest "Mondoo Org Scan (Internal)" and give it a description
 4. Set the _Homepage URL_ to anything, we suggest "https://mondoo.com"
 5. Uncheck the "Active" button under "Webhook".  
