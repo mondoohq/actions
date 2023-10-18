@@ -2,7 +2,7 @@
 
 A GitHub Action for using Mondoo to scan a GitHub Organization for security misconfigurations such as branch protection, CI tests, required code-review, and more. This Action can be used to audit individual GitHub repositories. This Action can be easily used in [.github or .github-private](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/customizing-your-organizations-profile) repositories.
 
-***Organizations with a large number of repositories (20+) are likely to hit Github's API Rate Limit causing this action to fail.  Please refer to the ''Using App Tokens'' section below!***
+***Organizations with a large number of repositories (20+) are likely to hit GitHub's API Rate Limit causing this action to fail.  Please refer to the 'Using App Tokens' section below!***
 
 
 ## Permissions
@@ -60,17 +60,17 @@ jobs:
 
 ## Using App Tokens
 
-Github implements an [aggressive API rate limit](https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#rate-limiting) which will impact organizational scans for orgs with a large number of repositories.  Normal access tokens are limited to 5,000 requests per hour.  By using a Github App Token you can increase this limit to 15,000 per hour.  
+GitHub implements an [aggressive API rate limit](https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#rate-limiting) which will impact organizational scans for orgs with a large number of repositories. Normal access tokens are limited to 5,000 requests per hour. By using a GitHub App Token you can increase this limit to 15,000 per hour.  
 
 To leverage an App Token:
 
-1. As a Github Organization Owner, go to your Organizational Settings and then under "Developer Settings" select "Github Apps".  The URL is ```https://github.com/organizations/<org_name>/settings/apps```
+1. As a GitHub Organization Owner, go to your Organizational Settings and then under "Developer Settings" select "Github Apps". The URL is ```https://github.com/organizations/<org_name>/settings/apps```
 2. Click the _New Github App_ button
 3. Name the app what ever you like, we suggest "Mondoo Org Scan (Internal)" and give it a description
 4. Set the _Homepage URL_ to anything, we suggest "https://mondoo.com"
 5. Uncheck the "Active" button under "Webhook".  
 6. Set the permissions for your Repo, Org and Account to allow Mondoo to scan the resources.
-7. Select the "Only on this account" button and then click "Create Github App" to finish.
+7. Select the "Only on this account" button and then click "Create GitHub App" to finish.
 8. Record the App ID, then scroll down and click the "Generate a private key" button.  This will download the private key that you will use later. 
 9. Now, click "Install App"  and then "Install" next to the Org your planning to scan.  You can choose All Repositories or only the rep running this action, then click "Install".
 10. Finally, update your action to include the github-app-token action and use it's output token.  This will require you to add the Apps ID and Private Key to Action Secrets.  The new action will look like:
