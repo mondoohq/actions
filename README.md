@@ -23,18 +23,18 @@ To create a service account on Mondoo Platform:
 
 1. Log in to [Mondoo Platform](https://console.mondoo.com)
 2. Select the Space you want to integrate with your repository.
-3. Click on **Settings** and then **Service Accounts**.
-4. Click **ADD ACCOUNT**.
-5. Select the **Base64-encoded** checkbox, and then click on the **GENERATE NEW CREDENTIALS** button.
+3. Select **Settings** and then **Service Accounts**.
+4. Select **ADD ACCOUNT**.
+5. Select the **Base64-encoded** checkbox, and then select the **GENERATE NEW CREDENTIALS** button.
 6. Copy the base64 encoded credentials and then move on to the next section.
 
 ### Add new GitHub Actions Secrets
 
-1. Click on **Settings** in your GitHub repository.
-2. Under the **Security** section click on **Actions**.
-3. Click **New repository secret**.
+1. Select **Settings** in your GitHub repository.
+2. Under the **Security** section select **Actions**.
+3. Select **New repository secret**.
 4. Name the secret `MONDOO_SERVICE_ACCOUNT` and paste the base64 encoded credentials from the previous section into the value input.
-5. Click **Add secret**.
+5. Select **Add secret**.
 
 ## Examples Workflows
 
