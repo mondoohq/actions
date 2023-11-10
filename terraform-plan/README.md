@@ -60,7 +60,7 @@ jobs:
       id: scan-tf-plan
       env:
         MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_CONFIG_BASE64 }}
-      - uses: mondoohq/actions/terraform-plan@v1.0.0
+      - uses: mondoohq/actions/terraform-plan@v2.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
