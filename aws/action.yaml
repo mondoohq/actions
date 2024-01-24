@@ -25,7 +25,7 @@ inputs:
     required: false
 runs:
   using: "docker"
-  image: "docker://mondoo/cnspec:9"
+  image: "docker://mondoo/cnspec:10"
   args:
     - scan
     - aws
