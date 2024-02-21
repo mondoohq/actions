@@ -15,7 +15,7 @@ A set of GitHub Action for using Mondoo to check for vulnerabilities and misconf
 
 ## Service Accounts
 
-All Mondoo GitHub Actions require a [service account](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) to authenticate with Mondoo Platform and run policies enabled for your assets in the Policy Hub.
+All Mondoo GitHub Actions require a [service account](https://mondoo.com/docs/platform/maintain/access/service_accounts/) to authenticate with Mondoo Platform and run policies enabled for your assets in the Policy Hub.
 
 ### Create Service Account
 
