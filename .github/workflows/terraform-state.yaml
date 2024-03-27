@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
 
       # run terraform plan checks
-      - uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v3
         with:
           # super important setting, otherwise you cannot pipe terraform show -json
           # see https://stackoverflow.com/questions/66496105/how-can-i-remove-all-the-extraneous-output-from-redirected-output-in-github-acti
