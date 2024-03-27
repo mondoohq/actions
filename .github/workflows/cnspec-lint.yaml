@@ -18,7 +18,7 @@ jobs:
           path: ./.github/test_files/cnspec-lint
           output-file: "custom-results.sarif"
       - name: Archive SARIF results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cnspec-lint-report
           path: custom-results.sarif
