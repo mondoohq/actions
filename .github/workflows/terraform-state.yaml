@@ -40,7 +40,7 @@ jobs:
           terraform show -json terraform.tfstate > state.json
         working-directory: ./.github/test_files/tfstate
       - name: Upload terraform plan
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform
           path: |
