@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: mondoohq/actions/github-org@v2.1.0
+      - uses: mondoohq/actions/github-org@v11.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -84,7 +84,7 @@ To leverage an App Token:
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
-      - uses: mondoohq/actions/github-org@v2.1.0
+      - uses: mondoohq/actions/github-org@v11.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
