@@ -1,0 +1,24 @@
+name: Test cnspec policy linting
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Lint Policies
+        uses: ./cnspec-lint
+        with:
+          path: ./.github/test_files/cnspec-lint
+          output-file: "custom-results.sarif"
+      - name: Archive SARIF results
+        uses: actions/upload-artifact@v4
+        with:
+          name: cnspec-lint-report
+          path: custom-results.sarif

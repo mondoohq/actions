@@ -14,8 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Test general Mondoo action
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
+      - name: Show status
+        uses: ./
+        with:
+          args: status
+          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
       - name: Show status
         uses: ./
         env:

@@ -15,7 +15,7 @@ A set of GitHub Action for using Mondoo to check for vulnerabilities and misconf
 
 ## Service Accounts
 
-All Mondoo GitHub Actions require a [service account](https://mondoo.com/docs/platform/service_accounts/#creating-service-accounts) to authenticate with Mondoo Platform and run policies enabled for your assets in the Policy Hub.
+All Mondoo GitHub Actions require a [service account](https://mondoo.com/docs/platform/maintain/access/service_accounts/) to authenticate with Mondoo Platform and run policies enabled for your assets in the Policy Hub.
 
 ### Create Service Account
 
@@ -23,18 +23,18 @@ To create a service account on Mondoo Platform:
 
 1. Log in to [Mondoo Platform](https://console.mondoo.com)
 2. Select the Space you want to integrate with your repository.
-3. Click on **Settings** and then **Service Accounts**.
-4. Click **ADD ACCOUNT**.
-5. Select the **Base64-encoded** checkbox, and then click on the **GENERATE NEW CREDENTIALS** button.
+3. Select **Settings** and then **Service Accounts**.
+4. Select **ADD ACCOUNT**.
+5. Select the **Base64-encoded** checkbox, and then select the **GENERATE NEW CREDENTIALS** button.
 6. Copy the base64 encoded credentials and then move on to the next section.
 
 ### Add new GitHub Actions Secrets
 
-1. Click on **Settings** in your GitHub repository.
-2. Under the **Security** section click on **Actions**.
-3. Click **New repository secret**.
+1. Select **Settings** in your GitHub repository.
+2. Under the **Security** section select **Actions**.
+3. Select **New repository secret**.
 4. Name the secret `MONDOO_SERVICE_ACCOUNT` and paste the base64 encoded credentials from the previous section into the value input.
-5. Click **Add secret**.
+5. Select **Add secret**.
 
 ## Examples Workflows
 
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: mondoohq/actions/k8s-manifest@v0.8.0
+      - uses: mondoohq/actions/k8s-manifest@v2.1.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
@@ -70,7 +70,7 @@ jobs:
   steps:
     - uses: actions/checkout@v3
 
-    - uses: mondoohq/actions/terraform-hcl@v0.8.0
+    - uses: mondoohq/actions/terraform-hcl@v2.1.0
       env:
         MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
       with:
@@ -115,7 +115,7 @@ jobs:
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:${{env.VERSION}}
           secrets: GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
       - name: Scan Docker Image with Mondoo
-        uses: mondoohq/actions/docker-image@v0.8.0
+        uses: mondoohq/actions/docker-image@v2.1.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:

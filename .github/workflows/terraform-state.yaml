@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Terraform scanning
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # run terraform plan checks
-      - uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v3
         with:
           # super important setting, otherwise you cannot pipe terraform show -json
           # see https://stackoverflow.com/questions/66496105/how-can-i-remove-all-the-extraneous-output-from-redirected-output-in-github-acti
@@ -40,7 +40,7 @@ jobs:
           terraform show -json terraform.tfstate > state.json
         working-directory: ./.github/test_files/tfstate
       - name: Upload terraform plan
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform
           path: |

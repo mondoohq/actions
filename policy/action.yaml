@@ -17,12 +17,17 @@ inputs:
   path:
     description: Path to the policy file.
     required: true
+  service-account-credentials:
+    description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
+    required: false
 runs:
   using: "docker"
-  image: "docker://mondoo/cnspec:7"
+  image: "docker://mondoo/cnspec:11"
   args:
     - bundle
     - upload
     - ${{ inputs.path }}
     - --log-level
     - ${{ inputs.log-level }}
+  env:
+    MONDOO_CONFIG_BASE64: ${{ inputs.service-account-credentials }}

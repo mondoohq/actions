@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Terraform scanning
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # run terraform plan checks
-      - uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v3
         with:
           # super important setting, otherwise you cannot pipe terraform show -json
           # see https://stackoverflow.com/questions/66496105/how-can-i-remove-all-the-extraneous-output-from-redirected-output-in-github-acti
@@ -34,7 +34,7 @@ jobs:
         run: terraform show -json plan > plan.json
         working-directory: ./.github/test_files/tfplan
       - name: Upload terraform plan
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-plan.json
           path: .github/test_files/tfplan/plan.json
@@ -43,4 +43,5 @@ jobs:
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
-          path: ".github/test_files/tfplan/plan.json"
+          path: ".github/test_files/tfplan/"
+          plan-file: plan.json

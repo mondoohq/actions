@@ -1,24 +1,23 @@
-name: Terraform HCL Scanning Tests
+name: GitHub repo Scanning
 on:
   pull_request:
   push:
     paths:
       - "action.yaml"
-      - "terraform-hcl/*"
-      - ".github/test_files/**"
     branches:
       - "main"
     tags: ["v*.*.*"]
 
 jobs:
-  terraform-tests:
+  github-repo-tests:
     runs-on: ubuntu-latest
-    name: Test Terraform scanning
+    name: Test GitHub repo scanning
     steps:
       - uses: actions/checkout@v4
-      - name: Scan Terraform HCL
-        uses: ./terraform-hcl
+      - name: Scan GitHub repo
+        uses: ./github-repo
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: ./.github/test_files/tf
+          repository: mondoohq/actions
