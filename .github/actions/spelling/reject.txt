@@ -12,3 +12,5 @@ Sorce
 ^wether.*
 \w*(?<!right-)click
 press
+deets
+organisation
