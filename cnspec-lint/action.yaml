@@ -13,9 +13,18 @@ inputs:
     description: "Specifies the output path for the SARIF report file"
     required: true
     default: "results.sarif"
+  image-tag:
+    description: "Select the Docker image tag to use from mondoo/cnspec repository"
+    required: true
+    default: "11"
+    options:
+      - "11"
+      - "edge-latest"
+      - "latest"
+
 runs:
   using: "docker"
-  image: "docker://mondoo/cnspec:11"
+  image: "docker://mondoo/cnspec:${{ inputs.image-tag }}"
   args:
     - bundle
     - lint
