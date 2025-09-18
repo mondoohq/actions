@@ -19,6 +19,11 @@ inputs:
     required: false
   score-threshold:
     description: >-
+      Deprecated: Use `risk-threshold` instead.
+    default: "0"
+    required: false
+  risk-threshold:
+    description: >-
       Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
     default: "0"
     required: false
@@ -35,8 +40,8 @@ runs:
     - ${{ inputs.image }}
     - --output
     - ${{ inputs.output }}
-    - --score-threshold
-    - ${{ inputs.score-threshold }}
+    - --risk-threshold
+    - ${{ inputs.risk-threshold }}
     - --log-level
     - ${{ inputs.log-level }}
   env:

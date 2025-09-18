@@ -19,12 +19,17 @@ inputs:
     required: false
   score-threshold:
     description: >-
+      Deprecated: Use `risk-threshold` instead.
+    default: "0"
+    required: false
+  risk-threshold:
+    description: >-
       Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
     default: "0"
     required: false
   is-cicd:
     description: "Automatically detects the GitHub Action Runs and report results into the CI/CD view"
-    default: true
+    default: "true"
   service-account-credentials:
     description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
     required: false
@@ -40,8 +45,8 @@ runs:
     - repository
     - --output
     - ${{ inputs.output }}
-    - --score-threshold
-    - ${{ inputs.score-threshold }}
+    - --risk-threshold
+    - ${{ inputs.risk-threshold }}
     - --log-level
     - ${{ inputs.log-level }}
     - --detect-cicd=${{ inputs.is-cicd }}
