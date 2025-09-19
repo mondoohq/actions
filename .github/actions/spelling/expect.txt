@@ -1,14 +1,10 @@
-buildx
 cla
 codeql
 dfd
 gaurav
-healthz
 myapp
 mshick
-nginx
 notsigned
 prcomment
-readyz
 softprops
 tibdex
