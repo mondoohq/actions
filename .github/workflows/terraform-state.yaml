@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Terraform scanning
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # run terraform plan checks
       - uses: hashicorp/setup-terraform@v3
