@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test k8s manifest scanning
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Scan k8s manifest
         uses: ./k8s-manifest
         env:
