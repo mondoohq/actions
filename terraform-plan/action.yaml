@@ -24,15 +24,20 @@ inputs:
     required: false
   score-threshold:
     description: >-
-      Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
+      Deprecated: Use `risk-threshold` instead.
     default: "0"
+    required: false
+  risk-threshold:
+    description: >-
+      Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
+    default: "101"
     required: false
   service-account-credentials:
     description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
     required: false
 runs:
   using: "docker"
-  image: "docker://mondoo/cnspec:11"
+  image: "docker://mondoo/cnspec:12"
   args:
     - scan
     - terraform
@@ -40,8 +45,8 @@ runs:
     - ${{ inputs.path }}/${{ inputs.plan-file }}
     - --output
     - ${{ inputs.output }}
-    - --score-threshold
-    - ${{ inputs.score-threshold }}
+    - --risk-threshold
+    - ${{ inputs.risk-threshold }}
     - --log-level
     - ${{ inputs.log-level }}
   env:
