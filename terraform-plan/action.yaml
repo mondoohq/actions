@@ -30,7 +30,7 @@ inputs:
   risk-threshold:
     description: >-
       Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
-    default: "0"
+    default: "101"
     required: false
   service-account-credentials:
     description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
