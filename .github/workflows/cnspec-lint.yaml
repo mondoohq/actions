@@ -11,14 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Lint Policies
         uses: ./cnspec-lint
         with:
           path: ./.github/test_files/cnspec-lint
           output-file: "custom-results.sarif"
       - name: Archive SARIF results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: cnspec-lint-report
           path: custom-results.sarif
