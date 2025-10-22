@@ -15,7 +15,7 @@ inputs:
     default: "results.sarif"
 runs:
   using: "docker"
-  image: "docker://mondoo/cnspec:12.6.0"
+  image: "docker://mondoo/cnspec:12"
   args:
     - policy
     - lint
