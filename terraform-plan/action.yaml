@@ -22,11 +22,6 @@ inputs:
     description: JSON plan file to scan.
     default: plan.json
     required: false
-  score-threshold:
-    description: >-
-      Deprecated: Use `risk-threshold` instead.
-    default: "0"
-    required: false
   risk-threshold:
     description: >-
       Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).

@@ -17,11 +17,6 @@ inputs:
   path:
     description: Path to the Kubernetes manifest file.
     required: true
-  score-threshold:
-    description: >-
-      Deprecated: Use `risk-threshold` instead.
-    default: "0"
-    required: false
   risk-threshold:
     description: >-
       Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).

@@ -11,7 +11,6 @@ The Mondoo Docker Image Action has properties which are passed to the underlying
 | `image`                       | true     |         | Docker image ID or `name:tag` to scan.                                                                                                                                                                                 |
 | `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                                                                   |
 | `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                                                                     |
-| `score-threshold`             | false    | 0       | Deprecated: Use `risk-threshold` instead.                                                                                                                                                                              |
 | `risk-threshold`              | false    | 101     | Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).                                                        |
 | `service-account-credentials` | false    |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/maintain/access/service_accounts/) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
 
@@ -25,7 +24,7 @@ You can use the Action as follows:
 
 ## Docker build scan and push to GHCR.io
 
-The following example uses the Docker [build-push-action](https://github.com/marketplace/actions/build-and-push-docker-images) to build a Docker container, scan the built container with Mondoo, and then push to ghcr.io. Use the `score-threshold` property to ensure builds meet security requirements before publishing.
+The following example uses the Docker [build-push-action](https://github.com/marketplace/actions/build-and-push-docker-images) to build a Docker container, scan the built container with Mondoo, and then push to ghcr.io. Use the `risk-threshold` property to ensure builds meet security requirements before publishing.
 
 ```yaml
 name: docker-build-scan-push
