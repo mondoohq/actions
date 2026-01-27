@@ -19,7 +19,7 @@ inputs:
     required: false
   risk-threshold:
     description: >-
-      Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
+      If any risk is greater or equal to this, exit status is 1. (default "0" - job continues regardless of the score returned by a scan).
     default: "101"
     required: false
   service-account-credentials:
