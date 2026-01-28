@@ -17,14 +17,9 @@ inputs:
       Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
     default: compact
     required: false
-  score-threshold:
-    description: >-
-      Deprecated: Use `risk-threshold` instead.
-    default: "0"
-    required: false
   risk-threshold:
     description: >-
-      Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
+      If any risk is greater or equal to this, exit status is 1. (default "0" - job continues regardless of the score returned by a scan).
     default: "101"
     required: false
   service-account-credentials:
