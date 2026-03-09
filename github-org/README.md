@@ -27,13 +27,13 @@ The GitHub Organization Action has properties which are passed to the underlying
 | `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                                                                     |
 | `risk-threshold`              | false    | 101     | If any risk is greater or equal to this, exit status is 1. (default "0" - job continues regardless of the score returned by a scan).                                                                                   |
 | `is-cicd`                     | false    | true    | Flag to disable the auto-detection for CI/CD runs. If deactivated it reports into the Fleet view                                                                                                                       |
-| `service-account-credentials` | false    |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/maintain/access/service_accounts/) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
+| `service-account-credentials` | false    |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
 
 Additionally, you need to specify the service account and GitHub credentials as an environment variable.
 
 | Environment            | Required | Default | Description                                                                                                                                                |
 | ---------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/maintain/access/service_accounts/) used to authenticate with Mondoo Platform |
+| `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform |
 | `GITHUB_TOKEN`         | true     |         | GitHub token used for authentication                                                                                                                       |
 
 ## Scan GitHub organization
@@ -48,8 +48,8 @@ jobs:
   scan-github-org:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: mondoohq/actions/github-org@v12.0.0
+      - uses: actions/checkout@v5
+      - uses: mondoohq/actions/github-org@v13.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -59,7 +59,7 @@ jobs:
 
 ## Using App Tokens
 
-> GitHub implements an [aggressive API rate limit](https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#rate-limiting) which will impact organizational scans for orgs with a large number of repositories. Normal access tokens are limited to 5,000 requests per hour. By using a GitHub App Token you can increase this limit to 15,000 per hour.
+> GitHub implements an [aggressive API rate limit](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api) which will impact organizational scans for orgs with a large number of repositories. Normal access tokens are limited to 5,000 requests per hour. By using a GitHub App Token you can increase this limit to 15,000 per hour.
 
 To leverage an App Token:
 
@@ -77,14 +77,14 @@ To leverage an App Token:
 ```
 # ....
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Generate token
         id: generate_token
-        uses: tibdex/github-app-token@v1
+        uses: actions/create-github-app-token@v1
         with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.APP_PRIVATE_KEY }}
-      - uses: mondoohq/actions/github-org@v12.0.0
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      - uses: mondoohq/actions/github-org@v13.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}

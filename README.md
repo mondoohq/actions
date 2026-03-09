@@ -3,6 +3,7 @@
 A set of GitHub Action for using Mondoo to check for vulnerabilities and misconfigurations in your GitHub projects. Actions have been organized into different asset types that Mondoo supports. We currently support the following asset types:
 
 - [AWS](aws) - Scan AWS accounts for misconfigurations as a post-provisioning step in your pipeline.
+- [cnspec Lint](cnspec-lint) - Lint cnspec policy bundles with SARIF output.
 - [Docker Image](docker-image) - Scan Docker images vulnerabilities and misconfigurations before pushing to a container registry.
 - [GitHub Organization](github-org) - Scan a GitHub organization and repositories for security configuration best practices.
 - [GitHub Repository](github-repo) - Scan a GitHub repository for security configuration best practices.
@@ -15,7 +16,7 @@ A set of GitHub Action for using Mondoo to check for vulnerabilities and misconf
 
 ## Service Accounts
 
-All Mondoo GitHub Actions require a [service account](https://mondoo.com/docs/platform/maintain/access/service_accounts/) to authenticate with Mondoo Platform and run policies enabled for your assets in the Policy Hub.
+All Mondoo GitHub Actions require a [service account](https://mondoo.com/docs/maintain/access/non-human/service_accounts) to authenticate with Mondoo Platform and run policies enabled for your assets in the Policy Hub.
 
 ### Create Service Account
 
@@ -50,8 +51,8 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: mondoohq/actions/k8s-manifest@v12.0.0
+      - uses: actions/checkout@v5
+      - uses: mondoohq/actions/k8s-manifest@v13.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
@@ -68,9 +69,9 @@ on:
       - "terraform/main.tf"
 jobs:
   steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v5
 
-    - uses: mondoohq/actions/terraform-hcl@v12.0.0
+    - uses: mondoohq/actions/terraform-hcl@v13.0.0
       env:
         MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
       with:
@@ -94,19 +95,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Login to GHCR.io
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
       - name: Build and export to Docker
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: .
           load: true
@@ -115,13 +116,13 @@ jobs:
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:${{env.VERSION}}
           secrets: GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
       - name: Scan Docker Image with Mondoo
-        uses: mondoohq/actions/docker-image@v12.0.0
+        uses: mondoohq/actions/docker-image@v13.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
           image: ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: .
           tags: |
@@ -159,7 +160,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test k8s manifest scanning
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
       - name: Scan k8s manifest
         uses: ./k8s-manifest
@@ -184,7 +185,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test k8s manifest scanning
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
       - name: Scan k8s manifest
         uses: ./k8s-manifest
@@ -233,7 +234,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
       - name: Check whether tests are enabled for this PR

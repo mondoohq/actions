@@ -29,14 +29,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Lint Policies
-        uses: github/mondoohq/actions/cnspec-lint
+        uses: mondoohq/actions/cnspec-lint@v13.0.0
         with:
           path: .
           output-file: "results.sarif"
       - name: Upload SARIF results file
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
 ```
