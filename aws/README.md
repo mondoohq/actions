@@ -29,6 +29,7 @@ on: push
 
 jobs:
   scan-aws-account:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5

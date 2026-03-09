@@ -23,7 +23,7 @@ Additionally, you need to specify the service account credentials as an environm
 
 ## Scan Terraform plan file
 
-The following example uses HashiCorp's [setup-terraform](https://github.com/hashicorp/setup-terraform) to generate a Terraform plan file and convert it to JSON before running scan with cnspec.
+The following example uses HashiCorp's [setup-terraform](https://github.com/hashicorp/setup-terraform) to generate a Terraform plan file and convert it to JSON before running a scan with cnspec.
 
 ```yaml
 name: Mondoo Terraform plan security scan
@@ -39,28 +39,26 @@ defaults:
 
 jobs:
   generate-and-scan-terraform-plan:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-    - uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_wrapper: false
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
 
-    - name: Terraform Init
-      id: terraform-init
-      run: terraform init
+      - name: Terraform Init
+        id: terraform-init
+        run: terraform init
 
-    - name: Convert Terraform plan to json
-      id: plan-to-json
-      run: |
-        terraform plan -no-color -out plan.tfplan
-        terraform show -json plan.tfplan >> plan.json
-      continue-on-error: true
+      - name: Convert Terraform plan to JSON
+        id: plan-to-json
+        run: |
+          terraform plan -no-color -out plan.tfplan
+          terraform show -json plan.tfplan >> plan.json
+        continue-on-error: true
 
-    - name: Scan Terraform plan file for security misconfigurations
-      id: scan-tf-plan
-      env:
-        MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_CONFIG_BASE64 }}
-      - uses: mondoohq/actions/terraform-plan@v13.0.0
+      - name: Scan Terraform plan file for security misconfigurations
+        uses: mondoohq/actions/terraform-plan@v13.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:

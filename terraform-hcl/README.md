@@ -32,6 +32,7 @@ on:
       - "terraform/main.tf"
 jobs:
   scan-tf:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: mondoohq/actions/terraform-hcl@v13.0.0

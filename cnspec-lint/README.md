@@ -6,10 +6,10 @@ A [GitHub Action](https://github.com/features/actions) for linting cnspec policy
 
 The cnspec lint Action has properties that are passed to the action using `with`.
 
-| Property      | Required | Default         | Description                                           |
-| ------------- | -------- | --------------- | ----------------------------------------------------- |
-| `path`        | true     | `.`             | Specifies the root path of the bundles .              |
-| `output-file` | true     | `results.sarif` | Specifies the output path for the SARIF report file'. |
+| Property      | Required | Default         | Description                                          |
+| ------------- | -------- | --------------- | ---------------------------------------------------- |
+| `path`        | true     | `.`             | Specifies the root path of the bundles.              |
+| `output-file` | true     | `results.sarif` | Specifies the output path for the SARIF report file. |
 
 ## Scan policy bundles for lint errors
 

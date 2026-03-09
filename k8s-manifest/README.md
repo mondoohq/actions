@@ -22,7 +22,7 @@ Additionally, you need to specify the service account credentials as an environm
 | ---------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform |
 
-## Scan a Kubernetes manifests with Mondoo
+## Scan Kubernetes manifests with Mondoo
 
 You can use the Action as follows:
 
