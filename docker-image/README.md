@@ -12,13 +12,13 @@ The Mondoo Docker Image Action has properties which are passed to the underlying
 | `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                                                                   |
 | `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                                                                     |
 | `risk-threshold`              | false    | 101     | If any risk is greater or equal to this, exit status is 1. (default "0" - job continues regardless of the score returned by a scan).                                                                                   |
-| `service-account-credentials` | false    |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/maintain/access/service_accounts/) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
+| `service-account-credentials` | false    |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
 
 Additionally, you need to specify the service account credentials as an environment variable.
 
 | Environment            | Required | Default | Description                                                                                                                                                |
 | ---------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/maintain/access/service_accounts/) used to authenticate with Mondoo Platform |
+| `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform |
 
 You can use the Action as follows:
 
@@ -41,19 +41,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Login to GHCR.io
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
       - name: Build and export to Docker
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: .
           load: true
@@ -62,13 +62,13 @@ jobs:
             ghcr.io/${{github.repository_owner}}/${{env.APP}}:${{env.VERSION}}
           secrets: GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
       - name: Scan Docker Image
-        uses: mondoohq/actions/docker-image@v12.0.0
+        uses: mondoohq/actions/docker-image@v13.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
           image: ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: .
           tags: |

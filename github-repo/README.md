@@ -4,13 +4,13 @@ A GitHub Action for using Mondoo to scan GitHub repositories for security miscon
 
 ## Permissions
 
-Depending on the amount that should be covered, you need to provide the proper permissions to the token. Since Mondoo only reads values, only read only permissions are required.
+Depending on the scope of the scan, you need to provide the proper permissions to the token. Since Mondoo only reads values, only read-only permissions are required.
 
 | Permission    | Description                                                                                  |
 | ------------- | -------------------------------------------------------------------------------------------- |
 | repo          | Ability to read configuration, required since GitHub does not provide a repo:read permission |
-| workflow      | eg. allows the verification of workflow settings                                             |
-| read:packages | e.g. allows to verify that packages are not public                                           |
+| workflow      | e.g. allows the verification of workflow settings                                            |
+| read:packages | e.g. allows you to verify that packages are not public                                       |
 
 ## Properties
 
@@ -23,15 +23,14 @@ The GitHub repository Action has properties that are passed to the action using 
 | `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                                                                   |
 | `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                                                                     |
 | `risk-threshold`              | false    | 101     | If any risk is greater or equal to this, exit status is 1. (default "0" - job continues regardless of the score returned by a scan).                                                                                   |
-| `service-account-credentials` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/maintain/access/service_accounts/) used to authenticate with Mondoo Platform                                                             |
+| `service-account-credentials` | false    |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
 | `is-cicd`                     | false    | true    | Flag to disable the auto-detection for CI/CD runs. If deactivated it reports into the Fleet view                                                                                                                       |
-| `service-account-credentials` | false    |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/maintain/access/service_accounts/) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
 
 Additionally, you need to specify the service account and GitHub credentials as an environment variable.
 
 | Environment            | Required | Default | Description                                                                                                                                                |
 | ---------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/maintain/access/service_accounts/) used to authenticate with Mondoo Platform |
+| `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform |
 | `GITHUB_TOKEN`         | true     |         | GitHub token used for authentication                                                                                                                       |
 
 ## Scan GitHub Repository
@@ -46,8 +45,8 @@ jobs:
   scan-github-repo:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: mondoohq/actions/github-repo@v12.0.0
+      - uses: actions/checkout@v5
+      - uses: mondoohq/actions/github-repo@v13.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

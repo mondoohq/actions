@@ -1,6 +1,6 @@
 # Mondoo Terraform Plan Action
 
-A [GitHub Action](https://github.com/features/actions) for testing [HashiCorp Terraform](https://terraform.io) plan files for security misconfigurations. Plan files must be saved in JSON format before they are scanned.
+A [GitHub Action](https://github.com/features/actions) for testing [HashiCorp Terraform](https://developer.hashicorp.com/terraform) plan files for security misconfigurations. Plan files must be saved in JSON format before they are scanned.
 
 ## Properties
 
@@ -13,17 +13,17 @@ The Terraform Action has properties which are passed to the underlying image. Th
 | `path`                        | false    | ./terraform | Path to the Terraform working directory (default "./terraform")                                                                                                                                                        |
 | `path-file`                   | false    | plan.json   | Name of plan file to scan (default "plan.json")                                                                                                                                                                        |
 | `risk-threshold`              | false    | 101         | If any risk is greater or equal to this, exit status is 1. (default "0" - job continues regardless of the score returned by a scan).                                                                                   |
-| `service-account-credentials` | false    |             | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/maintain/access/service_accounts/) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
+| `service-account-credentials` | false    |             | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
 
 Additionally, you need to specify the service account credentials as an environment variable.
 
 | Environment            | Required | Default | Description                                                                                                                                                |
 | ---------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/platform/maintain/access/service_accounts/) used to authenticate with Mondoo Platform |
+| `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform |
 
 ## Scan Terraform plan file
 
-The following example uses HashiCorp's [setup-terraform](https://github.com/hashicorp/setup-terraform) to generate a Terraform plan file and convert it to JSON before running scan with cnspec.
+The following example uses HashiCorp's [setup-terraform](https://github.com/hashicorp/setup-terraform) to generate a Terraform plan file and convert it to JSON before running a scan with cnspec.
 
 ```yaml
 name: Mondoo Terraform plan security scan
@@ -39,28 +39,26 @@ defaults:
 
 jobs:
   generate-and-scan-terraform-plan:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-    - uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_wrapper: false
+      - uses: actions/checkout@v5
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
 
-    - name: Terraform Init
-      id: terraform-init
-      run: terraform init
+      - name: Terraform Init
+        id: terraform-init
+        run: terraform init
 
-    - name: Convert Terraform plan to json
-      id: plan-to-json
-      run: |
-        terraform plan -no-color -out plan.tfplan
-        terraform show -json plan.tfplan >> plan.json
-      continue-on-error: true
+      - name: Convert Terraform plan to JSON
+        id: plan-to-json
+        run: |
+          terraform plan -no-color -out plan.tfplan
+          terraform show -json plan.tfplan >> plan.json
+        continue-on-error: true
 
-    - name: Scan Terraform plan file for security misconfigurations
-      id: scan-tf-plan
-      env:
-        MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_CONFIG_BASE64 }}
-      - uses: mondoohq/actions/terraform-plan@v12.0.0
+      - name: Scan Terraform plan file for security misconfigurations
+        uses: mondoohq/actions/terraform-plan@v13.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
