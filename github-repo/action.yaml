@@ -30,7 +30,7 @@ inputs:
     required: false
 runs:
   using: "docker"
-  image: "docker://mondoo/cnspec:12"
+  image: "docker://mondoo/cnspec:13"
   args:
     - scan
     - github
