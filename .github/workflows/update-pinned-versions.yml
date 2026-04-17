@@ -7,19 +7,23 @@
 #   # auto-update: source=github-releases repo=owner/repo
 #   version: v1.2.3
 #
-# Optional range= constraint controls which updates are allowed:
-#   range=major       — allow all updates (default)
-#   range=minor       — allow minor and patch only
-#   range=patch       — allow patch only
-#   range=minor+patch — same as minor
-#   range=major+minor — skip patch-only bumps
-#   range=major+patch — skip minor-only bumps
+# Optional ignore= constraint (Dependabot-style) controls which semver
+# bump types to skip. Comma-separated list of: major, minor, patch.
+#
+#   ignore=major       — skip major (allow minor + patch)
+#   ignore=minor       — skip minor (allow major + patch)
+#   ignore=patch       — skip patch (allow major + minor)
+#   ignore=major,minor — allow patch only
+#   ignore=major,patch — allow minor only
+#   ignore=minor,patch — allow major only
+#
+# When omitted, all update types are allowed (Dependabot default).
 #
 # Examples:
-#   # auto-update: source=github-releases repo=goreleaser/goreleaser range=minor
+#   # auto-update: source=github-releases repo=goreleaser/goreleaser ignore=major
 #   version: v2.15.3
 #
-#   # auto-update: source=github-releases repo=actions/checkout range=patch
+#   # auto-update: source=github-releases repo=actions/checkout ignore=major,minor
 #   version: v6.0.2
 #
 # Requirements:

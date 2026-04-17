@@ -6,22 +6,31 @@ Annotation format (place directly above the version line):
     # auto-update: source=github-releases repo=owner/repo
     version: v1.2.3
 
-Optional range= constraint controls which updates are allowed:
+Optional ignore= constraint (aligned with Dependabot's update-types syntax)
+controls which semver bumps to skip:
 
-    range=major   — allow all updates (default)
-    range=minor   — allow minor and patch (v2.x.x but not v3.x.x)
-    range=patch   — allow patch only (v2.15.x but not v2.16.x)
-    range=minor+patch — same as minor (explicit alias)
-    range=major+minor — allow major and minor, skip patch-only bumps
-    range=major+patch — allow major and patch, skip minor-only bumps
+    ignore=major         — skip major bumps (allow minor + patch)
+    ignore=minor         — skip minor bumps (allow major + patch)
+    ignore=patch         — skip patch bumps (allow major + minor)
+    ignore=major,minor   — skip major and minor (allow patch only)
+    ignore=major,patch   — skip major and patch (allow minor only)
+    ignore=minor,patch   — skip minor and patch (allow major only)
+
+When omitted, all update types are allowed (equivalent to Dependabot's default).
 
 Examples:
 
-    # auto-update: source=github-releases repo=goreleaser/goreleaser range=minor
+    # Only allow minor and patch updates (skip major):
+    # auto-update: source=github-releases repo=goreleaser/goreleaser ignore=major
     version: v2.15.3
 
-    # auto-update: source=github-releases repo=actions/checkout range=patch
+    # Only allow patch updates:
+    # auto-update: source=github-releases repo=actions/checkout ignore=major,minor
     version: v6.0.2
+
+    # Allow all updates (default):
+    # auto-update: source=github-releases repo=hashicorp/terraform
+    version: v1.9.0
 
 Requirements:
     - Versions must be strict semver (v0.0.0), no pre-release suffixes
@@ -30,7 +39,6 @@ Requirements:
     - Python 3.8+ (available on all GitHub Actions ubuntu runners)
 """
 
-import json
 import os
 import re
 import subprocess
@@ -42,7 +50,7 @@ SEMVER_RE = re.compile(r"\bv(\d+)\.(\d+)\.(\d+)\b")
 ANNOTATION_RE = re.compile(r"#\s*auto-update:\s*(.*)")
 KV_RE = re.compile(r"(\w+)=(\S+)")
 
-VALID_RANGES = {"major", "minor", "patch", "minor+patch", "major+minor", "major+patch"}
+BUMP_TYPES = {"major", "minor", "patch"}
 REPO_RE = re.compile(r"^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$")
 
 
@@ -90,22 +98,30 @@ def bump_type(current: SemVer, latest: SemVer) -> str | None:
     return None
 
 
-def is_allowed(current: SemVer, latest: SemVer, range_str: str) -> bool:
-    """Check if the update from current to latest is allowed by the range constraint."""
+def parse_ignore(ignore_str: str) -> set[str]:
+    """Parse a comma-separated ignore string into a set of bump types.
+
+    Returns an empty set if ignore_str is empty (allow all).
+    Raises ValueError if any token is not a valid bump type.
+    """
+    if not ignore_str:
+        return set()
+    types = {t.strip() for t in ignore_str.split(",")}
+    invalid = types - BUMP_TYPES
+    if invalid:
+        raise ValueError(
+            f"invalid ignore types: {', '.join(sorted(invalid))}; "
+            f"must be a comma-separated list of: {', '.join(sorted(BUMP_TYPES))}"
+        )
+    return types
+
+
+def is_allowed(current: SemVer, latest: SemVer, ignored: set[str]) -> bool:
+    """Check if the update from current to latest is allowed given ignored bump types."""
     bt = bump_type(current, latest)
     if bt is None:
         return False
-    if range_str == "major":
-        return True
-    if range_str in ("minor", "minor+patch"):
-        return bt in ("minor", "patch")
-    if range_str == "patch":
-        return bt == "patch"
-    if range_str == "major+minor":
-        return bt in ("major", "minor")
-    if range_str == "major+patch":
-        return bt in ("major", "patch")
-    return True
+    return bt not in ignored
 
 
 def warn(msg: str) -> None:
@@ -131,12 +147,14 @@ class Update:
     latest: SemVer
     file: str
     line_no: int
-    range_str: str
+    ignored: set[str]
 
-
-@dataclass
-class ScanResult:
-    updates: list[Update] = field(default_factory=list)
+    @property
+    def ignore_label(self) -> str:
+        """Human-readable label for the ignore constraint."""
+        if not self.ignored:
+            return ""
+        return f"ignore={','.join(sorted(self.ignored))}"
 
 
 def parse_annotation(line: str) -> dict[str, str] | None:
@@ -164,12 +182,12 @@ def scan_file(filepath: Path) -> list[Update]:
             warn(f"Invalid repo '{repo}' in annotation at {filepath}:{i + 1}")
             continue
 
-        range_str = attrs.get("range", "major")
-        if range_str not in VALID_RANGES:
-            warn(
-                f"Invalid range '{range_str}' at {filepath}:{i + 1}, "
-                f"must be one of: {', '.join(sorted(VALID_RANGES))}"
-            )
+        # Parse ignore constraint
+        ignore_str = attrs.get("ignore", "")
+        try:
+            ignored = parse_ignore(ignore_str)
+        except ValueError as e:
+            warn(f"{e} at {filepath}:{i + 1}")
             continue
 
         # Version is on the next line
@@ -203,10 +221,11 @@ def scan_file(filepath: Path) -> list[Update]:
             print(f"Up to date: {repo} {current} in {filepath}:{version_line_no + 1}")
             continue
 
-        if not is_allowed(current, latest, range_str):
+        if not is_allowed(current, latest, ignored):
             bt = bump_type(current, latest)
             print(
-                f"Skipped: {repo} {current} -> {latest} ({bt} bump blocked by range={range_str}) "
+                f"Skipped: {repo} {current} -> {latest} "
+                f"({bt} bump blocked by ignore={','.join(sorted(ignored))}) "
                 f"in {filepath}:{version_line_no + 1}"
             )
             continue
@@ -222,7 +241,7 @@ def scan_file(filepath: Path) -> list[Update]:
                 latest=latest,
                 file=str(filepath),
                 line_no=version_line_no + 1,  # 1-indexed
-                range_str=range_str,
+                ignored=ignored,
             )
         )
 
@@ -259,9 +278,9 @@ def build_summary(updates: list[Update]) -> str:
             lines.append("")
             prev_repo = u.repo
         safe_file = u.file.replace("`", "")
-        range_info = f" (range={u.range_str})" if u.range_str != "major" else ""
+        constraint = f" ({u.ignore_label})" if u.ignore_label else ""
         lines.append(
-            f"- `{safe_file}:{u.line_no}`: `{u.current}` -> `{u.latest}`{range_info}"
+            f"- `{safe_file}:{u.line_no}`: `{u.current}` -> `{u.latest}`{constraint}"
         )
     return "\n".join(lines)
 
@@ -278,7 +297,6 @@ def set_env(name: str, value: str) -> None:
     """Set a GitHub Actions environment variable (multiline-safe)."""
     env_file = os.environ.get("GITHUB_ENV", "")
     if env_file:
-        # Use a random delimiter to prevent injection
         delimiter = f"ghadelim_{os.urandom(8).hex()}"
         with open(env_file, "a") as f:
             f.write(f"{name}<<{delimiter}\n{value}\n{delimiter}\n")
@@ -293,7 +311,6 @@ def main() -> None:
         set_output("has_updates", "false")
         sys.exit(0)
 
-    # Find all yaml files
     files = sorted(set(root.rglob("*.yml")) | set(root.rglob("*.yaml")))
 
     all_updates: list[Update] = []
