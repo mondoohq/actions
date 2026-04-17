@@ -100,6 +100,8 @@ jobs:
           # Find all auto-update annotations.
           # Use process substitution to keep the loop in the current shell,
           # so writes to UPDATES_FILE are visible after the loop.
+          # Note: grep -oP (PCRE) is required. This is safe because the workflow
+          # is pinned to ubuntu-latest, which always ships GNU grep with PCRE.
           while IFS=: read -r file lineno _; do
             annotation=$(sed -n "${lineno}p" "$file")
             repo=$(echo "$annotation" | grep -oP '# auto-update: source=github-releases repo=\K\S+')
@@ -111,9 +113,11 @@ jobs:
 
             next_lineno=$((lineno + 1))
             version_line=$(sed -n "${next_lineno}p" "$file")
-            # Extract the first semver on the line — this is the actual value
+            # Extract the first strict semver on the line — this is the actual value
             # (e.g., "version: v2.0.0 # was v1.9.0" extracts v2.0.0).
-            current=$(echo "$version_line" | grep -oP 'v[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+            # Word boundaries (\b) prevent partial matches inside pre-release tags
+            # like v1.2.3-rc1 (which would otherwise extract v1.2.3).
+            current=$(echo "$version_line" | grep -oP '\bv[0-9]+\.[0-9]+\.[0-9]+\b' | head -1)
 
             if [ -z "$current" ]; then
               echo "::warning::No version found on line ${next_lineno} of ${file} (annotation for ${repo})"
@@ -160,12 +164,13 @@ jobs:
 
           # Apply updates using exact string matching.
           # Both $current and $latest are validated as strict semver (v0.0.0) above,
-          # so the only special character is '.'. We escape it for correctness.
+          # so the only special character is '.'. We escape dots in the pattern side.
+          # $latest needs no escaping — sed replacement side treats '.' as literal,
+          # and semver can't contain '&', '/', or '\' (the only special replacement chars).
           # The first-match-only replacement is intentional — the annotation contract
           # requires the version to appear exactly once on the annotated line.
           while IFS='|' read -r repo current latest file next_lineno; do
             escaped_current=$(printf '%s' "$current" | sed 's/[.]/\\./g')
-            # $latest is validated semver — no sed-special chars on the replacement side
             sed -i "${next_lineno}s/${escaped_current}/${latest}/" "$file"
             echo "Updated ${file}:${next_lineno}: ${current} -> ${latest}"
           done < "$UPDATES_FILE"
