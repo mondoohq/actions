@@ -6,26 +6,20 @@ Annotation format (place directly above the version line):
     # auto-update: source=github-releases repo=owner/repo
     version: v1.2.3
 
-Optional ignore= constraint (aligned with Dependabot's update-types syntax)
-controls which semver bumps to skip:
+Optional updates= constraint controls which semver bumps are allowed:
 
-    ignore=major         — skip major bumps (allow minor + patch)
-    ignore=minor         — skip minor bumps (allow major + patch)
-    ignore=patch         — skip patch bumps (allow major + minor)
-    ignore=major,minor   — skip major and minor (allow patch only)
-    ignore=major,patch   — skip major and patch (allow minor only)
-    ignore=minor,patch   — skip minor and patch (allow major only)
-
-When omitted, all update types are allowed (equivalent to Dependabot's default).
+    updates=all     — allow all updates (default)
+    updates=minor   — allow minor and patch only (skip major)
+    updates=patch   — allow patch only (skip major and minor)
 
 Examples:
 
-    # Only allow minor and patch updates (skip major):
-    # auto-update: source=github-releases repo=goreleaser/goreleaser ignore=major
+    # Only allow minor and patch updates:
+    # auto-update: source=github-releases repo=goreleaser/goreleaser updates=minor
     version: v2.15.3
 
     # Only allow patch updates:
-    # auto-update: source=github-releases repo=actions/checkout ignore=major,minor
+    # auto-update: source=github-releases repo=actions/checkout updates=patch
     version: v6.0.2
 
     # Allow all updates (default):
@@ -43,14 +37,14 @@ import os
 import re
 import subprocess
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 SEMVER_RE = re.compile(r"\bv(\d+)\.(\d+)\.(\d+)\b")
 ANNOTATION_RE = re.compile(r"#\s*auto-update:\s*(.*)")
 KV_RE = re.compile(r"(\w+)=(\S+)")
 
-BUMP_TYPES = {"major", "minor", "patch"}
+VALID_UPDATES = {"all", "minor", "patch"}
 REPO_RE = re.compile(r"^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$")
 
 
@@ -98,30 +92,18 @@ def bump_type(current: SemVer, latest: SemVer) -> str | None:
     return None
 
 
-def parse_ignore(ignore_str: str) -> set[str]:
-    """Parse a comma-separated ignore string into a set of bump types.
-
-    Returns an empty set if ignore_str is empty (allow all).
-    Raises ValueError if any token is not a valid bump type.
-    """
-    if not ignore_str:
-        return set()
-    types = {t.strip() for t in ignore_str.split(",")}
-    invalid = types - BUMP_TYPES
-    if invalid:
-        raise ValueError(
-            f"invalid ignore types: {', '.join(sorted(invalid))}; "
-            f"must be a comma-separated list of: {', '.join(sorted(BUMP_TYPES))}"
-        )
-    return types
-
-
-def is_allowed(current: SemVer, latest: SemVer, ignored: set[str]) -> bool:
-    """Check if the update from current to latest is allowed given ignored bump types."""
+def is_allowed(current: SemVer, latest: SemVer, updates: str) -> bool:
+    """Check if the update from current to latest is allowed by the updates constraint."""
     bt = bump_type(current, latest)
     if bt is None:
         return False
-    return bt not in ignored
+    if updates == "all":
+        return True
+    if updates == "minor":
+        return bt in ("minor", "patch")
+    if updates == "patch":
+        return bt == "patch"
+    return True
 
 
 def warn(msg: str) -> None:
@@ -147,14 +129,7 @@ class Update:
     latest: SemVer
     file: str
     line_no: int
-    ignored: set[str]
-
-    @property
-    def ignore_label(self) -> str:
-        """Human-readable label for the ignore constraint."""
-        if not self.ignored:
-            return ""
-        return f"ignore={','.join(sorted(self.ignored))}"
+    updates: str
 
 
 def parse_annotation(line: str) -> dict[str, str] | None:
@@ -182,12 +157,12 @@ def scan_file(filepath: Path) -> list[Update]:
             warn(f"Invalid repo '{repo}' in annotation at {filepath}:{i + 1}")
             continue
 
-        # Parse ignore constraint
-        ignore_str = attrs.get("ignore", "")
-        try:
-            ignored = parse_ignore(ignore_str)
-        except ValueError as e:
-            warn(f"{e} at {filepath}:{i + 1}")
+        updates_str = attrs.get("updates", "all")
+        if updates_str not in VALID_UPDATES:
+            warn(
+                f"Invalid updates='{updates_str}' at {filepath}:{i + 1}, "
+                f"must be one of: {', '.join(sorted(VALID_UPDATES))}"
+            )
             continue
 
         # Version is on the next line
@@ -221,11 +196,11 @@ def scan_file(filepath: Path) -> list[Update]:
             print(f"Up to date: {repo} {current} in {filepath}:{version_line_no + 1}")
             continue
 
-        if not is_allowed(current, latest, ignored):
+        if not is_allowed(current, latest, updates_str):
             bt = bump_type(current, latest)
             print(
                 f"Skipped: {repo} {current} -> {latest} "
-                f"({bt} bump blocked by ignore={','.join(sorted(ignored))}) "
+                f"({bt} bump blocked by updates={updates_str}) "
                 f"in {filepath}:{version_line_no + 1}"
             )
             continue
@@ -241,7 +216,7 @@ def scan_file(filepath: Path) -> list[Update]:
                 latest=latest,
                 file=str(filepath),
                 line_no=version_line_no + 1,  # 1-indexed
-                ignored=ignored,
+                updates=updates_str,
             )
         )
 
@@ -278,7 +253,7 @@ def build_summary(updates: list[Update]) -> str:
             lines.append("")
             prev_repo = u.repo
         safe_file = u.file.replace("`", "")
-        constraint = f" ({u.ignore_label})" if u.ignore_label else ""
+        constraint = f" (updates={u.updates})" if u.updates != "all" else ""
         lines.append(
             f"- `{safe_file}:{u.line_no}`: `{u.current}` -> `{u.latest}`{constraint}"
         )

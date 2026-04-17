@@ -7,23 +7,16 @@
 #   # auto-update: source=github-releases repo=owner/repo
 #   version: v1.2.3
 #
-# Optional ignore= constraint (Dependabot-style) controls which semver
-# bump types to skip. Comma-separated list of: major, minor, patch.
-#
-#   ignore=major       — skip major (allow minor + patch)
-#   ignore=minor       — skip minor (allow major + patch)
-#   ignore=patch       — skip patch (allow major + minor)
-#   ignore=major,minor — allow patch only
-#   ignore=major,patch — allow minor only
-#   ignore=minor,patch — allow major only
-#
-# When omitted, all update types are allowed (Dependabot default).
+# Optional updates= constraint controls which semver bumps are allowed:
+#   updates=all     — allow all updates (default)
+#   updates=minor   — allow minor and patch only (skip major)
+#   updates=patch   — allow patch only (skip major and minor)
 #
 # Examples:
-#   # auto-update: source=github-releases repo=goreleaser/goreleaser ignore=major
+#   # auto-update: source=github-releases repo=goreleaser/goreleaser updates=minor
 #   version: v2.15.3
 #
-#   # auto-update: source=github-releases repo=actions/checkout ignore=major,minor
+#   # auto-update: source=github-releases repo=actions/checkout updates=patch
 #   version: v6.0.2
 #
 # Requirements:
