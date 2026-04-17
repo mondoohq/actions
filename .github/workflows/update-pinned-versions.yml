@@ -111,10 +111,9 @@ jobs:
 
             next_lineno=$((lineno + 1))
             version_line=$(sed -n "${next_lineno}p" "$file")
-            # Extract the version value from the line. Uses tail -1 to grab the
-            # last semver match, skipping any versions in comments or hashes that
-            # may appear earlier on the line (e.g., "version: v2.0.0 # was v1.9.0").
-            current=$(echo "$version_line" | grep -oP 'v[0-9]+\.[0-9]+\.[0-9]+' | tail -1)
+            # Extract the first semver on the line — this is the actual value
+            # (e.g., "version: v2.0.0 # was v1.9.0" extracts v2.0.0).
+            current=$(echo "$version_line" | grep -oP 'v[0-9]+\.[0-9]+\.[0-9]+' | head -1)
 
             if [ -z "$current" ]; then
               echo "::warning::No version found on line ${next_lineno} of ${file} (annotation for ${repo})"
