@@ -7,8 +7,23 @@
 #   # auto-update: source=github-releases repo=owner/repo
 #   version: v1.2.3
 #
+# Optional range= constraint controls which updates are allowed:
+#   range=major       — allow all updates (default)
+#   range=minor       — allow minor and patch only
+#   range=patch       — allow patch only
+#   range=minor+patch — same as minor
+#   range=major+minor — skip patch-only bumps
+#   range=major+patch — skip minor-only bumps
+#
+# Examples:
+#   # auto-update: source=github-releases repo=goreleaser/goreleaser range=minor
+#   version: v2.15.3
+#
+#   # auto-update: source=github-releases repo=actions/checkout range=patch
+#   version: v6.0.2
+#
 # Requirements:
-#   - The version must be strict semver (v0.0.0), no pre-release suffixes
+#   - Versions must be strict semver (v0.0.0), no pre-release suffixes
 #   - The version must appear exactly once on the line following the annotation
 #   - Only github-releases (not raw tags) are supported as a source
 #
@@ -80,122 +95,26 @@ jobs:
         with:
           ssh-key: ${{ secrets.ssh-key || '' }}
 
+      # Fetch the script from this repo (mondoohq/actions), not from the caller repo.
+      # This ensures the script version matches the workflow version.
+      - name: Fetch update script
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: mondoohq/actions
+          path: _actions
+          sparse-checkout: .github/scripts/update-pinned-versions.py
+          sparse-checkout-cone-mode: false
+
       - name: Scan for annotated versions and update
         id: scan
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SCAN_PATH: ${{ inputs.scan-path }}
-        run: |
-          set -euo pipefail
+        run: python3 _actions/.github/scripts/update-pinned-versions.py
 
-          # Strict semver pattern used for both current and latest validation
-          SEMVER_RE='^v[0-9]+\.[0-9]+\.[0-9]+$'
-
-          # Temp file for collecting updates across iterations. Cleaned up on
-          # exit via trap. All reads (apply + summary) happen in this same run:
-          # block before the shell exits, so the file is always available.
-          UPDATES_FILE=$(mktemp)
-          trap 'rm -f "$UPDATES_FILE"' EXIT
-
-          # Find all auto-update annotations.
-          # Use process substitution to keep the loop in the current shell,
-          # so writes to UPDATES_FILE are visible after the loop.
-          # Note: grep -oP (PCRE) is required. This is safe because the workflow
-          # is pinned to ubuntu-latest, which always ships GNU grep with PCRE.
-          while IFS=: read -r file lineno _; do
-            annotation=$(sed -n "${lineno}p" "$file")
-            repo=$(echo "$annotation" | grep -oP '# auto-update: source=github-releases repo=\K\S+')
-
-            if [ -z "$repo" ] || ! [[ "$repo" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]]; then
-              echo "::warning::Invalid or malformed annotation on line ${lineno} of ${file}: repo=${repo}"
-              continue
-            fi
-
-            next_lineno=$((lineno + 1))
-            version_line=$(sed -n "${next_lineno}p" "$file")
-            # Extract the first strict semver on the line — this is the actual value
-            # (e.g., "version: v2.0.0 # was v1.9.0" extracts v2.0.0).
-            # Word boundaries (\b) prevent partial matches inside pre-release tags
-            # like v1.2.3-rc1 (which would otherwise extract v1.2.3).
-            current=$(echo "$version_line" | grep -oP '\bv[0-9]+\.[0-9]+\.[0-9]+\b' | head -1)
-
-            if [ -z "$current" ]; then
-              echo "::warning::No version found on line ${next_lineno} of ${file} (annotation for ${repo})"
-              continue
-            fi
-            if ! [[ "$current" =~ $SEMVER_RE ]]; then
-              echo "::warning::Current version '${current}' on line ${next_lineno} of ${file} is not strict semver, skipping"
-              continue
-            fi
-
-            # Fetch latest release. Separate HTTP/auth errors from empty responses.
-            api_output=$(gh api "repos/${repo}/releases/latest" --jq '.tag_name' 2>&1) || {
-              echo "::warning::API error fetching latest release for ${repo}: ${api_output}"
-              continue
-            }
-            latest="$api_output"
-            if [ -z "$latest" ]; then
-              echo "::warning::No release found for ${repo} (repo may only use tags, not releases)"
-              continue
-            fi
-            if ! [[ "$latest" =~ $SEMVER_RE ]]; then
-              echo "::warning::Latest version '${latest}' for ${repo} is not strict semver, skipping"
-              continue
-            fi
-
-            # Only update if latest is actually newer (avoids downgrade PRs on rollbacks)
-            newest=$(printf '%s\n%s' "$current" "$latest" | sort -V | tail -1)
-            if [ "$newest" = "$latest" ] && [ "$current" != "$latest" ]; then
-              echo "${repo}|${current}|${latest}|${file}|${next_lineno}" >> "$UPDATES_FILE"
-              echo "Update available: ${repo} ${current} -> ${latest} in ${file}:${next_lineno}"
-            else
-              echo "Up to date: ${repo} ${current} in ${file}:${next_lineno}"
-            fi
-          done < <(grep -rnP '# auto-update: source=github-releases repo=' "$SCAN_PATH" \
-            --include='*.yml' --include='*.yaml' 2>/dev/null)
-
-          if [ ! -s "$UPDATES_FILE" ]; then
-            echo "All annotated versions are up to date."
-            echo "has_updates=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "has_updates=true" >> "$GITHUB_OUTPUT"
-
-          # Apply updates using exact string matching.
-          # Both $current and $latest are validated as strict semver (v0.0.0) above,
-          # so the only special character is '.'. We escape dots in the pattern side.
-          # $latest needs no escaping — sed replacement side treats '.' as literal,
-          # and semver can't contain '&', '/', or '\' (the only special replacement chars).
-          # The first-match-only replacement is intentional — the annotation contract
-          # requires the version to appear exactly once on the annotated line.
-          while IFS='|' read -r repo current latest file next_lineno; do
-            escaped_current=$(printf '%s' "$current" | sed 's/[.]/\\./g')
-            sed -i "${next_lineno}s/${escaped_current}/${latest}/" "$file"
-            echo "Updated ${file}:${next_lineno}: ${current} -> ${latest}"
-          done < "$UPDATES_FILE"
-
-          # Build PR summary. Uses a random heredoc delimiter to prevent
-          # injection into GITHUB_ENV. All values are sanitized:
-          #   - repo: validated against ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$
-          #   - versions: validated against strict semver ^v[0-9]+\.[0-9]+\.[0-9]+$
-          #   - file paths: backticks stripped to prevent markdown injection
-          delimiter="SUMMARY_$(openssl rand -hex 8)"
-          {
-            echo "SUMMARY<<${delimiter}"
-            prev_repo=""
-            while IFS='|' read -r repo current latest file next_lineno; do
-              safe_file="${file//\`/}"
-              if [ "$repo" != "$prev_repo" ]; then
-                echo "### [\`${repo}\`](https://github.com/${repo})"
-                echo "Release notes: https://github.com/${repo}/releases/tag/${latest}"
-                echo ""
-                prev_repo="$repo"
-              fi
-              echo "- \`${safe_file}:${next_lineno}\`: \`${current}\` -> \`${latest}\`"
-            done < "$UPDATES_FILE"
-            echo "${delimiter}"
-          } >> "$GITHUB_ENV"
+      - name: Clean up action checkout
+        if: always()
+        run: rm -rf _actions
 
       - name: Create pull request
         if: steps.scan.outputs.has_updates == 'true'
