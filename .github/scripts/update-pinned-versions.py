@@ -33,6 +33,8 @@ Requirements:
     - Python 3.8+ (available on all GitHub Actions ubuntu runners)
 """
 
+from __future__ import annotations
+
 import os
 import re
 import subprocess
@@ -224,7 +226,13 @@ def scan_file(filepath: Path) -> list[Update]:
 
 
 def apply_updates(updates: list[Update]) -> None:
-    """Apply version updates to files."""
+    """Apply version updates to files.
+
+    Uses str.replace() for exact literal matching — no regex or sed involved,
+    so there are no escaping or delimiter concerns. The count=1 argument
+    ensures only the first occurrence on the line is replaced (matching the
+    annotation contract that the version appears exactly once).
+    """
     for u in updates:
         path = Path(u.file)
         lines = path.read_text().splitlines()
