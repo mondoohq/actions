@@ -1,0 +1,130 @@
+# Reusable workflow: Update pinned tool versions
+#
+# Scans workflow files for `# auto-update:` annotations and opens a PR
+# when newer versions are available.
+#
+# Annotation format (place directly above the version line):
+#   # auto-update: source=github-releases repo=owner/repo
+#   version: v1.2.3
+#
+# Optional updates= constraint controls which semver bumps are allowed:
+#   updates=all     — allow all updates (default)
+#   updates=minor   — allow minor and patch only (skip major)
+#   updates=patch   — allow patch only (skip major and minor)
+#
+# Examples:
+#   # auto-update: source=github-releases repo=goreleaser/goreleaser updates=minor
+#   version: v2.15.3
+#
+#   # auto-update: source=github-releases repo=actions/checkout updates=patch
+#   version: v6.0.2
+#
+# Requirements:
+#   - Versions must be strict semver (v0.0.0), no pre-release suffixes
+#   - The version must appear exactly once on the line following the annotation
+#   - Only github-releases (not raw tags) are supported as a source
+#
+# Usage in a caller workflow:
+#   jobs:
+#     update-versions:
+#       uses: mondoohq/actions/.github/workflows/update-pinned-versions.yml@main
+#       permissions:
+#         contents: write
+#         pull-requests: write
+#       secrets:
+#         ssh-key: ${{ secrets.DEPLOY_KEY }}
+#
+# Or without an SSH deploy key (uses GITHUB_TOKEN, PRs won't trigger other workflows):
+#   jobs:
+#     update-versions:
+#       uses: mondoohq/actions/.github/workflows/update-pinned-versions.yml@main
+#       permissions:
+#         contents: write
+#         pull-requests: write
+
+name: Update pinned tool versions
+
+on:
+  workflow_call:
+    inputs:
+      scan-path:
+        description: "Directory to scan for annotations (default: .github/)"
+        required: false
+        default: ".github/"
+        type: string
+      base-branch:
+        description: "Base branch for the PR"
+        required: false
+        default: "main"
+        type: string
+      pr-branch:
+        description: "Branch name for the PR"
+        required: false
+        default: "version/pinned-tools-update"
+        type: string
+      committer-name:
+        description: "Git committer name"
+        required: false
+        default: "github-actions[bot]"
+        type: string
+      committer-email:
+        description: "Git committer email"
+        required: false
+        default: "41898282+github-actions[bot]@users.noreply.github.com"
+        type: string
+    secrets:
+      ssh-key:
+        description: "SSH deploy key for pushing (optional, falls back to GITHUB_TOKEN)"
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  update-versions:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ssh-key: ${{ secrets.ssh-key || '' }}
+
+      # Fetch the script from this repo (mondoohq/actions), not from the caller repo.
+      # This ensures the script version matches the workflow version.
+      - name: Fetch update script
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: mondoohq/actions
+          path: _actions
+          sparse-checkout: .github/scripts/update-pinned-versions.py
+          sparse-checkout-cone-mode: false
+
+      - name: Scan for annotated versions and update
+        id: scan
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SCAN_PATH: ${{ inputs.scan-path }}
+        run: python3 _actions/.github/scripts/update-pinned-versions.py
+
+      - name: Clean up action checkout
+        if: always()
+        run: rm -rf _actions
+
+      - name: Create pull request
+        if: steps.scan.outputs.has_updates == 'true'
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
+        with:
+          base: ${{ inputs.base-branch }}
+          labels: dependencies
+          committer: "${{ inputs.committer-name }} <${{ inputs.committer-email }}>"
+          commit-message: "🧹 Update pinned tool versions"
+          author: "${{ inputs.committer-name }} <${{ inputs.committer-email }}>"
+          title: "🧹 Update pinned tool versions"
+          branch: ${{ inputs.pr-branch }}
+          body: |
+            Automated update of pinned tool versions detected via `# auto-update:` annotations.
+
+            ${{ env.SUMMARY }}
