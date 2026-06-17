@@ -2,6 +2,10 @@ name: Test xgrep scanning
 
 on:
   pull_request:
+    paths:
+      - "xgrep/**"
+      - ".github/test_files/xgrep/**"
+      - ".github/workflows/xgrep.yaml"
   push:
     branches:
       - main
