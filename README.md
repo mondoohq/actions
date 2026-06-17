@@ -13,6 +13,7 @@ A set of GitHub Actions for using Mondoo to check for vulnerabilities and miscon
 - [Terraform HCL](terraform-hcl) - Scan HashiCorp Terraform HCL code for security misconfigurations.
 - [Terraform Plan](terraform-plan) - Scan HashiCorp Terraform Plan for security misconfigurations.
 - [Terraform State](terraform-state) - Scan HashiCorp Terraform State output for security misconfigurations.
+- [xgrep](xgrep) - Run xgrep SAST scanning and report findings to GitHub code scanning (no service account required).
 
 ## Service Accounts
 
