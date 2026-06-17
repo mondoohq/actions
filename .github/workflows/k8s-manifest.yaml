@@ -3,13 +3,13 @@ on:
   pull_request:
     paths:
       - "action.yaml"
-      - "k8s-manifest/*"
+      - "k8s-manifest/**"
       - ".github/test_files/**"
       - ".github/workflows/k8s-manifest.yaml"
   push:
     paths:
       - "action.yaml"
-      - "k8s-manifest/*"
+      - "k8s-manifest/**"
       - ".github/test_files/**"
     branches:
       - "main"

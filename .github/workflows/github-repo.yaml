@@ -8,6 +8,7 @@ on:
   push:
     paths:
       - "action.yaml"
+      - "github-repo/**"
     branches:
       - "main"
     tags: ["v*.*.*"]
