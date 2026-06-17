@@ -10,6 +10,7 @@ on:
     paths:
       - "cnspec-lint/**"
       - ".github/test_files/**"
+      - ".github/workflows/cnspec-lint.yaml"
     branches:
       - main
 

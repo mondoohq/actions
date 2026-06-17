@@ -9,6 +9,7 @@ on:
     paths:
       - "action.yaml"
       - ".github/test_files/**"
+      - ".github/workflows/general-action.yaml"
     branches:
       - "main"
     tags: ["v*.*.*"]

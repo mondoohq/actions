@@ -2,13 +2,12 @@ name: GitHub repo Scanning
 on:
   pull_request:
     paths:
-      - "action.yaml"
       - "github-repo/**"
       - ".github/workflows/github-repo.yaml"
   push:
     paths:
-      - "action.yaml"
       - "github-repo/**"
+      - ".github/workflows/github-repo.yaml"
     branches:
       - "main"
     tags: ["v*.*.*"]
