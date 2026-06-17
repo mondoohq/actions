@@ -1,6 +1,12 @@
 name: Terraform State Scanning Tests
 on:
   pull_request:
+    paths:
+      - "action.yaml"
+      - "terraform-plan/*"
+      - "terraform-state/*"
+      - ".github/test_files/**"
+      - ".github/workflows/terraform-state.yaml"
   push:
     paths:
       - "action.yaml"
