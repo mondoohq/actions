@@ -1,11 +1,15 @@
 name: Terraform HCL Scanning Tests
 on:
   pull_request:
+    paths:
+      - "terraform-hcl/**"
+      - ".github/test_files/**"
+      - ".github/workflows/terraform-hcl.yaml"
   push:
     paths:
-      - "action.yaml"
-      - "terraform-hcl/*"
+      - "terraform-hcl/**"
       - ".github/test_files/**"
+      - ".github/workflows/terraform-hcl.yaml"
     branches:
       - "main"
     tags: ["v*.*.*"]

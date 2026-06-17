@@ -1,11 +1,15 @@
 name: Docker Image Scanning
 on:
   pull_request:
+    paths:
+      - "docker-image/**"
+      - ".github/test_files/**"
+      - ".github/workflows/docker-image.yaml"
   push:
     paths:
-      - "action.yaml"
-      - "docker-image/*"
+      - "docker-image/**"
       - ".github/test_files/**"
+      - ".github/workflows/docker-image.yaml"
     branches:
       - "main"
     tags: ["v*.*.*"]

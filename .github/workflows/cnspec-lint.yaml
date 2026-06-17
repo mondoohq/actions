@@ -2,7 +2,15 @@ name: Test cnspec policy linting
 
 on:
   pull_request:
+    paths:
+      - "cnspec-lint/**"
+      - ".github/test_files/**"
+      - ".github/workflows/cnspec-lint.yaml"
   push:
+    paths:
+      - "cnspec-lint/**"
+      - ".github/test_files/**"
+      - ".github/workflows/cnspec-lint.yaml"
     branches:
       - main
 

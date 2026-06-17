@@ -1,11 +1,15 @@
 name: K8s Manifest Scanning
 on:
   pull_request:
+    paths:
+      - "k8s-manifest/**"
+      - ".github/test_files/**"
+      - ".github/workflows/k8s-manifest.yaml"
   push:
     paths:
-      - "action.yaml"
-      - "k8s-manifest/*"
+      - "k8s-manifest/**"
       - ".github/test_files/**"
+      - ".github/workflows/k8s-manifest.yaml"
     branches:
       - "main"
     tags: ["v*.*.*"]
