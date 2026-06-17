@@ -1,0 +1,98 @@
+name: "xgrep security scan"
+author: "mondoohq"
+description: "Run xgrep, a Semgrep-compatible SAST scanner, and output a SARIF report for GitHub code scanning"
+branding:
+  icon: "shield"
+  color: "purple"
+inputs:
+  path:
+    description: "Path(s) to scan"
+    required: false
+    default: "."
+  rules:
+    description: "Path to a custom rule file or directory. When empty, xgrep's built-in security and secrets rules are used."
+    required: false
+    default: ""
+  with-builtin:
+    description: "When 'rules' is set, additionally run these built-in rule categories (comma-separated, e.g. 'security,secrets')."
+    required: false
+    default: ""
+  output-file:
+    description: "Path for the SARIF report file"
+    required: false
+    default: "results.sarif"
+  version:
+    description: "Version of the @mondoohq/xgrep npm package to install (e.g. '0.9.0' or 'latest')"
+    required: false
+    default: "latest"
+  sarif-category:
+    description: "SARIF category (GitHub code scanning automationDetails.id). Must match the category used when uploading the SARIF."
+    required: false
+    default: "xgrep"
+  fail-on:
+    description: "Fail the job when findings exist at or above this severity: 'off' (report only), 'error', or 'warning'."
+    required: false
+    default: "off"
+  args:
+    description: "Extra raw flags passed through to 'xgrep ci' (e.g. '--exclude vendor --decode')."
+    required: false
+    default: ""
+outputs:
+  sarif-file:
+    description: "Path to the generated SARIF report"
+    value: ${{ inputs.output-file }}
+runs:
+  using: "composite"
+  steps:
+    - name: Install xgrep
+      shell: bash
+      env:
+        INPUT_VERSION: ${{ inputs.version }}
+      run: npm install -g "@mondoohq/xgrep@${INPUT_VERSION}"
+    - name: Run xgrep scan
+      shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_RULES: ${{ inputs.rules }}
+        INPUT_WITH_BUILTIN: ${{ inputs.with-builtin }}
+        INPUT_OUTPUT_FILE: ${{ inputs.output-file }}
+        INPUT_SARIF_CATEGORY: ${{ inputs.sarif-category }}
+        INPUT_ARGS: ${{ inputs.args }}
+      run: |
+        set -euo pipefail
+        args=(ci --sarif-category "$INPUT_SARIF_CATEGORY" -o "$INPUT_OUTPUT_FILE")
+        if [ -n "$INPUT_RULES" ]; then
+          args+=(-c "$INPUT_RULES")
+          if [ -n "$INPUT_WITH_BUILTIN" ]; then
+            args+=(--with-builtin "$INPUT_WITH_BUILTIN")
+          fi
+        fi
+        if [ -n "$INPUT_ARGS" ]; then
+          read -ra extra <<<"$INPUT_ARGS"
+          args+=("${extra[@]}")
+        fi
+        args+=("$INPUT_PATH")
+        echo "Running: xgrep ${args[*]}"
+        xgrep "${args[@]}"
+    - name: Gate on findings
+      if: ${{ inputs.fail-on != 'off' }}
+      shell: bash
+      env:
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_OUTPUT_FILE: ${{ inputs.output-file }}
+      run: |
+        set -euo pipefail
+        if [ ! -f "$INPUT_OUTPUT_FILE" ]; then
+          echo "::warning::SARIF file '$INPUT_OUTPUT_FILE' not found; skipping gate"
+          exit 0
+        fi
+        if [ "$INPUT_FAIL_ON" = "error" ]; then
+          count=$(jq '[.runs[].results[]? | select(.level == "error")] | length' "$INPUT_OUTPUT_FILE")
+        else
+          count=$(jq '[.runs[].results[]? | select(.level == "error" or .level == "warning")] | length' "$INPUT_OUTPUT_FILE")
+        fi
+        echo "Findings at or above '$INPUT_FAIL_ON': $count"
+        if [ "$count" -gt 0 ]; then
+          echo "::error::xgrep found $count finding(s) at or above severity '$INPUT_FAIL_ON'"
+          exit 1
+        fi
