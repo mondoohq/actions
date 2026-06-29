@@ -60,6 +60,8 @@ runs:
         INPUT_ARGS: ${{ inputs.args }}
       run: |
         set -euo pipefail
+        echo "running xgrep version"
+        xgrep version
         args=(ci --sarif-category "$INPUT_SARIF_CATEGORY" -o "$INPUT_OUTPUT_FILE")
         if [ -n "$INPUT_RULES" ]; then
           args+=(-c "$INPUT_RULES")
