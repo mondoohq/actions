@@ -40,7 +40,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
       - name: Lint Policies
-        uses: mondoohq/actions/cnspec-lint@v13.2.0
+        uses: mondoohq/actions/cnspec-lint@v13.3.0
         with:
           path: .
           output-file: "results.sarif"

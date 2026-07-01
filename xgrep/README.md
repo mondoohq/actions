@@ -54,7 +54,7 @@ jobs:
         with:
           fetch-depth: 0 # required for diff-aware scanning on pull requests
       - name: Run xgrep
-        uses: mondoohq/actions/xgrep@v13.2.0
+        uses: mondoohq/actions/xgrep@v13.3.0
         with:
           path: .
           output-file: "results.sarif"
@@ -72,7 +72,7 @@ By default the action only reports findings to code scanning. To make the job fa
 
 ```yaml
 - name: Run xgrep
-  uses: mondoohq/actions/xgrep@v13.2.0
+  uses: mondoohq/actions/xgrep@v13.3.0
   with:
     fail-on: error # or 'warning'
 ```
