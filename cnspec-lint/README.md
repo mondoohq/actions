@@ -1,6 +1,13 @@
 # Mondoo cnspec lint Action
 
-A [GitHub Action](https://github.com/features/actions) for linting cnspec policy bundles with SARIF output.
+A [GitHub Action](https://github.com/features/actions) that runs `cnspec bundle lint` on cnspec policy bundles and produces a [SARIF](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning) report so lint results show up in GitHub code scanning.
+
+No Mondoo Platform service account or authentication is required.
+
+## Requirements
+
+- This is a Docker container action and runs only on Linux runners (e.g. `ubuntu-latest`).
+- Uploading the SARIF report to GitHub code scanning requires the `security-events: write` permission.
 
 ## Properties
 
@@ -11,9 +18,7 @@ The cnspec lint Action has properties that are passed to the action using `with`
 | `path`        | true     | `.`             | Specifies the root path of the bundles.              |
 | `output-file` | true     | `results.sarif` | Specifies the output path for the SARIF report file. |
 
-## Scan policy bundles for lint errors
-
-You can use the Action as follows:
+## Lint policy bundles
 
 ```yaml
 name: Lint Policies
@@ -23,6 +28,10 @@ on:
   push:
     branches:
       - main
+
+permissions:
+  contents: read
+  security-events: write # required to upload SARIF
 
 jobs:
   build:
@@ -40,3 +49,11 @@ jobs:
         with:
           sarif_file: results.sarif
 ```
+
+## Join the community!
+
+Join the [Mondoo Community GitHub Discussions](https://github.com/orgs/mondoohq/discussions) to collaborate on policy as code and security automation.
+
+## License
+
+[Mozilla Public License v2.0](https://github.com/mondoohq/actions/blob/main/LICENSE)

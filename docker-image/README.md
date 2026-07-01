@@ -1,10 +1,16 @@
-# Mondoo Docker Action
+# Mondoo Docker Image Action
 
-A GitHub Action for using Mondoo to check for vulnerabilities and misconfigurations in your Docker container images.
+A [GitHub Action](https://github.com/features/actions) for using Mondoo to scan Docker container images for vulnerabilities and misconfigurations before pushing to a container registry. This action supports both local images and images within remote registries.
+
+## Requirements
+
+- This is a Docker container action and runs only on Linux runners (e.g. `ubuntu-latest`).
+- A [Mondoo service account](https://mondoo.com/docs/maintain/access/non-human/service_accounts) is required to authenticate with Mondoo Platform (see `MONDOO_CONFIG_BASE64` below).
+- The image must be available to the runner: built and loaded locally, or in a registry the runner can reach (log in first for private registries).
 
 ## Properties
 
-The Mondoo Docker Image Action has properties which are passed to the underlying image. These are passed to the action using `with`.
+The Docker Image Action has properties that are passed to the action using `with`.
 
 | Property                      | Required | Default | Description                                                                                                                                                                                                            |
 | ----------------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -20,9 +26,7 @@ Additionally, you need to specify the service account credentials as an environm
 | ---------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform |
 
-You can use the Action as follows:
-
-## Docker build scan and push to GHCR.io
+## Build, scan, and push to GHCR.io
 
 The following example uses the Docker [build-push-action](https://github.com/marketplace/actions/build-and-push-docker-images) to build a Docker container, scan the built container with Mondoo, and then push to ghcr.io. Use the `risk-threshold` property to ensure builds meet security requirements before publishing.
 
@@ -79,3 +83,11 @@ jobs:
       - name: Image Digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 ```
+
+## Join the community!
+
+Join the [Mondoo Community GitHub Discussions](https://github.com/orgs/mondoohq/discussions) to collaborate on policy as code and security automation.
+
+## License
+
+[Mozilla Public License v2.0](https://github.com/mondoohq/actions/blob/main/LICENSE)

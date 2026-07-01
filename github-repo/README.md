@@ -1,6 +1,12 @@
 # Mondoo GitHub Repository Action
 
-A GitHub Action for using Mondoo to scan GitHub repositories for security misconfigurations such as branch protection, CI tests, required code-review, and more. This Action can be used to audit individual GitHub repositories.
+A [GitHub Action](https://github.com/features/actions) for using Mondoo to scan a GitHub repository for security misconfigurations such as branch protection, CI tests, required code-review, and more. This action can be used to audit individual GitHub repositories.
+
+## Requirements
+
+- This is a Docker container action and runs only on Linux runners (e.g. `ubuntu-latest`).
+- A [Mondoo service account](https://mondoo.com/docs/maintain/access/non-human/service_accounts) is required to authenticate with Mondoo Platform (see `MONDOO_CONFIG_BASE64` below).
+- A GitHub token with read permissions is required (see the Permissions section below).
 
 ## Permissions
 
@@ -14,28 +20,25 @@ Depending on the scope of the scan, you need to provide the proper permissions t
 
 ## Properties
 
-The GitHub repository Action has properties that are passed to the action using `with`.
+The GitHub Repository Action has properties that are passed to the action using `with`.
 
 | Property                      | Required | Default | Description                                                                                                                                                                                                            |
 | ----------------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `repository`                  | true     |         | GitHub Repository eg. `mondoohq/actions`                                                                                                                                                                               |
-| `token`                       | true     |         | GitHub token used for authentication                                                                                                                                                                                   |
+| `repository`                  | true     |         | GitHub repository to scan eg. `mondoohq/actions`.                                                                                                                                                                      |
 | `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                                                                   |
 | `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                                                                     |
 | `risk-threshold`              | false    | 101     | If any risk is greater or equal to this, exit status is 1. (default "0" - job continues regardless of the score returned by a scan).                                                                                   |
+| `is-cicd`                     | false    | true    | Flag to disable the auto-detection for CI/CD runs. If deactivated it reports into the Fleet view.                                                                                                                      |
 | `service-account-credentials` | false    |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
-| `is-cicd`                     | false    | true    | Flag to disable the auto-detection for CI/CD runs. If deactivated it reports into the Fleet view                                                                                                                       |
 
-Additionally, you need to specify the service account and GitHub credentials as an environment variable.
+Additionally, you need to specify the service account and GitHub credentials as environment variables.
 
 | Environment            | Required | Default | Description                                                                                                                                                |
 | ---------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform |
 | `GITHUB_TOKEN`         | true     |         | GitHub token used for authentication                                                                                                                       |
 
-## Scan GitHub Repository
-
-You can use the Action as follows:
+## Scan a GitHub repository
 
 ```yaml
 name: Scan GitHub repository
@@ -51,5 +54,13 @@ jobs:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repository: ${{ GITHUB_REPOSITORY }}
+          repository: ${{ github.repository }}
 ```
+
+## Join the community!
+
+Join the [Mondoo Community GitHub Discussions](https://github.com/orgs/mondoohq/discussions) to collaborate on policy as code and security automation.
+
+## License
+
+[Mozilla Public License v2.0](https://github.com/mondoohq/actions/blob/main/LICENSE)
