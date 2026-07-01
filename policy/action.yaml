@@ -9,11 +9,6 @@ inputs:
       Sets the log level: error, warn, info, debug, trace (default "info")
     default: info
     required: false
-  output:
-    description: >-
-      Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
-    default: compact
-    required: false
   path:
     description: Path to the policy file.
     required: true

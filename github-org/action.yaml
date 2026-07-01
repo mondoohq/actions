@@ -19,7 +19,7 @@ inputs:
     required: false
   risk-threshold:
     description: >-
-      If any risk is greater or equal to this, exit status is 1. (default "0" - job continues regardless of the score returned by a scan).
+      Fail the job (exit status 1) if any risk score is greater than or equal to this value. Risk scores range from 0 to 100, so the default of "101" never fails the job.
     default: "101"
     required: false
   is-cicd:
