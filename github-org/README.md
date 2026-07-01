@@ -52,7 +52,7 @@ jobs:
   scan-github-org:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: mondoohq/actions/github-org@v13.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
@@ -81,10 +81,10 @@ To leverage an App Token:
 ```yaml
 # ....
 steps:
-  - uses: actions/checkout@v5
+  - uses: actions/checkout@v7
   - name: Generate token
     id: generate_token
-    uses: actions/create-github-app-token@v1
+    uses: actions/create-github-app-token@v3
     with:
       app-id: ${{ secrets.APP_ID }}
       private-key: ${{ secrets.APP_PRIVATE_KEY }}

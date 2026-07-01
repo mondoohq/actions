@@ -52,7 +52,7 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: mondoohq/actions/k8s-manifest@v13.0.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
@@ -72,7 +72,7 @@ jobs:
   scan-tf:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: mondoohq/actions/terraform-hcl@v13.0.0
         env:
@@ -98,19 +98,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Login to GHCR.io
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
       - name: Build and export to Docker
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           load: true
@@ -125,7 +125,7 @@ jobs:
         with:
           image: ghcr.io/${{github.repository_owner}}/${{env.APP}}:latest
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           tags: |
@@ -163,7 +163,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test k8s manifest scanning
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Scan k8s manifest
         uses: ./k8s-manifest
@@ -188,7 +188,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test k8s manifest scanning
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Scan k8s manifest
         uses: ./k8s-manifest
@@ -237,7 +237,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Check whether tests are enabled for this PR
@@ -262,7 +262,7 @@ jobs:
         # Here we add a comment to the PR that states whether the tests are running or not. This is an optional step.
         # We have it for clarification. It does not add new comments for every change. It will edit the existing comment instead.
       - name: Update PR comment
-        uses: mshick/add-pr-comment@v2
+        uses: mshick/add-pr-comment@v3
         if: always()
         with:
           message: |
