@@ -64,7 +64,7 @@ jobs:
         continue-on-error: true
 
       - name: Scan Terraform plan file for security misconfigurations
-        uses: mondoohq/actions/terraform-plan@v13.2.0
+        uses: mondoohq/actions/terraform-plan@v13.3.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:

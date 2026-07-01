@@ -45,7 +45,7 @@ jobs:
           role-to-assume: arn:aws:iam::123456789100:role/my-github-actions-role
           role-session-name: MySessionName
 
-      - uses: mondoohq/actions/aws@v13.2.0
+      - uses: mondoohq/actions/aws@v13.3.0
         env:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
