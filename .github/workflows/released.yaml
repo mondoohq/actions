@@ -53,7 +53,7 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           find . -type f -name 'README.md' -print0 \
-            | xargs -0 sed -i -E "s#(mondoohq/actions/[a-z0-9-]+@)v[0-9]+\.[0-9]+\.[0-9]+#\1${VERSION}#g"
+            | xargs -0 sed -i -E "s#(mondoohq/actions(/[a-z0-9-]+)?@)v[0-9]+\.[0-9]+\.[0-9]+#\1${VERSION}#g"
 
       - name: Open pull request
         env:
@@ -67,8 +67,15 @@ jobs:
           BRANCH="ci/readme-pins-${VERSION}"
           git config user.name "Mondoo Tools"
           git config user.email "tools@mondoo.com"
-          git switch -c "$BRANCH" 2>/dev/null || git switch "$BRANCH"
-          git commit -am "📝 docs: update README version pins to ${VERSION}"
+          # -C creates the branch or resets it if a prior run left one behind.
+          git switch -C "$BRANCH"
+          # Stage READMEs explicitly so newly added ones are included too.
+          git add -- '*README.md'
+          if git diff --cached --quiet; then
+            echo "No staged README changes; nothing to commit."
+            exit 0
+          fi
+          git commit -m "📝 docs: update README version pins to ${VERSION}"
           git push -u origin "$BRANCH" --force-with-lease
           if gh pr view "$BRANCH" >/dev/null 2>&1; then
             echo "PR already open for ${BRANCH}; it has been updated."
