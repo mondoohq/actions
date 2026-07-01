@@ -1,3 +1,6 @@
 .claude/settings.local.json
 .xgrep/
 *.sarif
+
+# editor swap files
+*.swp
