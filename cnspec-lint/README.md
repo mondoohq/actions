@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Lint Policies
         uses: mondoohq/actions/cnspec-lint@v13.0.0
         with:
