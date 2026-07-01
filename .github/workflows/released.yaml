@@ -6,42 +6,74 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version that was released"
+        description: "Version to write into the READMEs (e.g. v13.2.0)"
         required: true
-        default: "v1.2.3"
+        default: "v13.2.0"
+
+# main is protected and requires changes to land via a pull request, so this
+# workflow opens a PR instead of pushing to main directly.
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-readme-pins
+  cancel-in-progress: false
 
 jobs:
   update-version:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: "main"
           fetch-depth: 0
-      - name: Version from Workflow Dispatch
-        if: github.event_name == 'workflow_dispatch'
+
+      - name: Resolve version
+        id: version
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-      - name: Version from Release Tag
-        if: github.event_name == 'release'
-        run: |
-          echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
-      - name: Verify valid version
-        id: vars
-        run: |
-          if [[ ! $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Invalid version: $VERSION"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            VERSION="$INPUT_VERSION"
+          else
+            VERSION="$RELEASE_TAG"
+          fi
+          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid version: $VERSION"
             exit 1
           fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-      - name: Find and Replace
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update README version pins
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          find . -type f -name 'README.md' -exec sed -i -E "s/(mondoohq\/.+@).+$/\1${VERSION}/g" {} \;
-      - name: Commit READMEs
+          find . -type f -name 'README.md' -print0 \
+            | xargs -0 sed -i -E "s#(mondoohq/actions/[a-z0-9-]+@)v[0-9]+\.[0-9]+\.[0-9]+#\1${VERSION}#g"
+
+      - name: Open pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          git add .
-          git config --global user.email "tools@mondoo.com"
-          git config --global user.name "Mondoo Tools"
-          git commit -m "Update READMEs with released version $VERSION"
-          git push -f
+          if git diff --quiet; then
+            echo "READMEs already pin ${VERSION}; nothing to update."
+            exit 0
+          fi
+          BRANCH="ci/readme-pins-${VERSION}"
+          git config user.name "Mondoo Tools"
+          git config user.email "tools@mondoo.com"
+          git switch -c "$BRANCH" 2>/dev/null || git switch "$BRANCH"
+          git commit -am "📝 docs: update README version pins to ${VERSION}"
+          git push -u origin "$BRANCH" --force-with-lease
+          if gh pr view "$BRANCH" >/dev/null 2>&1; then
+            echo "PR already open for ${BRANCH}; it has been updated."
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title "📝 docs: update README version pins to ${VERSION}" \
+              --body "Automated update of \`mondoohq/actions/*@\` version pins in the READMEs to **${VERSION}**, triggered by the ${VERSION} release."
+          fi
