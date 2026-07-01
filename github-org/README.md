@@ -1,44 +1,48 @@
 # Mondoo GitHub Organization Action
 
-A GitHub Action for using Mondoo to scan a GitHub Organization for security misconfigurations such as branch protection, CI tests, required code-review, and more. This Action can be used to audit a GitHub organization and its repositories. This Action can be easily used in [.github or .github-private](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/customizing-your-organizations-profile) repositories.
+A [GitHub Action](https://github.com/features/actions) for using Mondoo to scan a GitHub organization for security misconfigurations such as branch protection, CI tests, required code-review, and more. This action can be used to audit a GitHub organization and its repositories, and is easily used in [.github or .github-private](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/customizing-your-organizations-profile) repositories.
 
 **_Organizations with a large number of repositories (20+) are likely to hit GitHub's API Rate Limit causing this action to fail. Please refer to the 'Using App Tokens' section below!_**
+
+## Requirements
+
+- This is a Docker container action and runs only on Linux runners (e.g. `ubuntu-latest`).
+- A [Mondoo service account](https://mondoo.com/docs/maintain/access/non-human/service_accounts) is required to authenticate with Mondoo Platform (see `MONDOO_CONFIG_BASE64` below).
+- A GitHub token with read permissions is required (see the Permissions section below).
 
 ## Permissions
 
 Depending on the scope of the scan, you need to provide the proper permissions to the token. Since Mondoo only reads values, only read-only permissions are required.
 
 | Permission     | Description                                                                                  |
-| -------------- | -------------------------------------------------------------------------------------------- |
+| -------------- | ------------------------------------------------------------------------------------------- |
 | read:org       | e.g. required to verify GitHub organizations                                                 |
-| admin:org_hook | e.g. required to verify that all hooks use https                                             |
+| admin:org_hook | e.g. required to verify that all hooks use https                                            |
 | repo           | Ability to read configuration, required since GitHub does not provide a repo:read permission |
-| workflow       | e.g. allows the verification of workflow settings                                            |
-| read:packages  | e.g. allows you to verify that packages are not public                                       |
+| workflow       | e.g. allows the verification of workflow settings                                           |
+| read:packages  | e.g. allows you to verify that packages are not public                                      |
 
 ## Properties
 
-The GitHub Organization Action has properties which are passed to the underlying image. These are passed to the action using `with`.
+The GitHub Organization Action has properties that are passed to the action using `with`.
 
 | Property                      | Required | Default | Description                                                                                                                                                                                                            |
-| ----------------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `organization`                | true     |         | GitHub organization to scan eg. `mondoohq`.                                                                                                                                                                            |
-| `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                                                                   |
-| `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                                                                     |
-| `risk-threshold`              | false    | 101     | If any risk is greater or equal to this, exit status is 1. (default "0" - job continues regardless of the score returned by a scan).                                                                                   |
-| `is-cicd`                     | false    | true    | Flag to disable the auto-detection for CI/CD runs. If deactivated it reports into the Fleet view                                                                                                                       |
+| ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `organization`                | true     |         | GitHub organization to scan eg. `mondoohq`.                                                                                                                                                                           |
+| `log-level`                   | false    | info    | Sets the log level: error, warn, info, debug, trace (default "info")                                                                                                                                                  |
+| `output`                      | false    | compact | Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")                                                                                                    |
+| `risk-threshold`              | false    | 101     | If any risk is greater or equal to this, exit status is 1. (default "0" - job continues regardless of the score returned by a scan).                                                                                  |
+| `is-cicd`                     | false    | true    | Flag to disable the auto-detection for CI/CD runs. If deactivated it reports into the Fleet view.                                                                                                                     |
 | `service-account-credentials` | false    |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform. You can also use the environment variable mentioned below. |
 
-Additionally, you need to specify the service account and GitHub credentials as an environment variable.
+Additionally, you need to specify the service account and GitHub credentials as environment variables.
 
 | Environment            | Required | Default | Description                                                                                                                                                |
-| ---------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MONDOO_CONFIG_BASE64` | true     |         | Base64 encoded [service account credentials](https://mondoo.com/docs/maintain/access/non-human/service_accounts) used to authenticate with Mondoo Platform |
 | `GITHUB_TOKEN`         | true     |         | GitHub token used for authentication                                                                                                                       |
 
-## Scan GitHub organization
-
-You can use the Action as follows:
+## Scan a GitHub organization
 
 ```yaml
 name: Scan GitHub organization
@@ -54,7 +58,7 @@ jobs:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          organization: ${{ GITHUB_REPOSITORY_OWNER }}
+          organization: ${{ github.repository_owner }}
 ```
 
 ## Using App Tokens
@@ -74,7 +78,7 @@ To leverage an App Token:
 9. Now, select **Install App** and then **Install** next to the Org you're planning to scan. You can choose All Repositories or only the repo running this action, then select **Install**.
 10. Finally, update your action to include the github-app-token action and use its output token. This will require you to add the App ID and Private Key to Action Secrets. The new action will look like:
 
-```
+```yaml
 # ....
     steps:
       - uses: actions/checkout@v5
@@ -92,3 +96,11 @@ To leverage an App Token:
           organization: <YOUR_ORGANIZATION>
           is-cicd: false
 ```
+
+## Join the community!
+
+Join the [Mondoo Community GitHub Discussions](https://github.com/orgs/mondoohq/discussions) to collaborate on policy as code and security automation.
+
+## License
+
+[Mozilla Public License v2.0](https://github.com/mondoohq/actions/blob/main/LICENSE)
