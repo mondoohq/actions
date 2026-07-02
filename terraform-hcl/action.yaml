@@ -43,7 +43,7 @@ runs:
     - ${{ inputs.risk-threshold }}
     - --log-level
     - ${{ inputs.log-level }}
-    - --output-file
+    - --output-target
     - ${{ inputs.output-file }}
   env:
     MONDOO_CONFIG_BASE64: ${{ inputs.service-account-credentials }}

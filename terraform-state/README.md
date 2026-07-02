@@ -81,7 +81,7 @@ jobs:
           sarif_file: results.sarif
 ```
 
-> The `--output-file` is always written (default `results.sarif`); it only contains SARIF when `output: sarif` is set. Leave `output` at its default to keep the human-readable console output.
+> The report file is always written (default `results.sarif`, via cnspec's `--output-target`); it contains SARIF only when `output: sarif` is set.
 
 ## Join the community!
 

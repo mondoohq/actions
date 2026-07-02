@@ -94,7 +94,7 @@ Set `output: sarif` to write a [SARIF](https://docs.github.com/en/code-security/
     sarif_file: results.sarif
 ```
 
-> The job needs `permissions: security-events: write` to upload SARIF. The action runs at the workspace root (the `defaults.run.working-directory` above only affects `run:` steps), so `--output-file results.sarif` is written there. It only contains SARIF when `output: sarif` is set; leave `output` at its default to keep the human-readable console output.
+> The job needs `permissions: security-events: write` to upload SARIF. The action runs at the workspace root (the `defaults.run.working-directory` above only affects `run:` steps), so the report file (default `results.sarif`, via cnspec's `--output-target`) is written there. It contains SARIF only when `output: sarif` is set.
 
 ## Join the community!
 
