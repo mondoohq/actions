@@ -11,8 +11,13 @@ inputs:
     required: false
   output:
     description: >-
-      Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
+      Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report, sarif (default "compact")
     default: compact
+    required: false
+  output-file:
+    description: >-
+      Path to write the scan report to. Combine with `output: sarif` to produce a SARIF report you can upload to GitHub code scanning.
+    default: results.sarif
     required: false
   path:
     description: Path to the Terraform working directory.
@@ -39,5 +44,7 @@ runs:
     - ${{ inputs.risk-threshold }}
     - --log-level
     - ${{ inputs.log-level }}
+    - --output-target
+    - ${{ inputs.output-file }}
   env:
     MONDOO_CONFIG_BASE64: ${{ inputs.service-account-credentials }}

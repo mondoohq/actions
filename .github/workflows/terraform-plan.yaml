@@ -48,3 +48,17 @@ jobs:
         with:
           path: ".github/test_files/tfplan/"
           plan-file: plan.json
+      - name: Scan Terraform Plan (SARIF)
+        uses: ./terraform-plan
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        with:
+          path: ".github/test_files/tfplan/"
+          plan-file: plan.json
+          output: sarif
+          output-file: results.sarif
+      - name: Archive SARIF results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: terraform-plan-report
+          path: results.sarif

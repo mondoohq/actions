@@ -26,3 +26,16 @@ jobs:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
           path: ./.github/test_files/tf
+      - name: Scan Terraform HCL (SARIF)
+        uses: ./terraform-hcl
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        with:
+          path: ./.github/test_files/tf
+          output: sarif
+          output-file: results.sarif
+      - name: Archive SARIF results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: terraform-hcl-report
+          path: results.sarif
