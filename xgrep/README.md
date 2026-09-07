@@ -66,6 +66,11 @@ jobs:
           category: xgrep
 ```
 
+> **`path` does not narrow the scan.** The action runs `xgrep ci`, which is
+> diff-aware: it analyses the files a pull request changed, whatever path it is
+> given. `xgrep ci a/one.js` will still report findings in `b/two.js` if that file
+> also changed. Use `args: "--exclude '<glob>'"` to keep a scan off a subtree.
+
 ## Fail the build on findings
 
 By default the action only reports findings to code scanning. To make the job fail when findings are present, set `fail-on`:

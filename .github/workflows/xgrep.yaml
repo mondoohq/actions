@@ -77,6 +77,13 @@ jobs:
           path: ./.github/test_files/xgrep/gate/suppressed.js
           output-file: suppressed.sarif
           fail-on: error
+          # `path` does not scope the scan. The action runs `xgrep ci`, which is
+          # diff-aware and analyses the files a pull request changed regardless of
+          # the path it is handed -- verified: `xgrep ci a/one.js` also reports
+          # findings in `b/two.js`, where `xgrep scan a/one.js` does not. So this
+          # job saw the sibling fixture, whose finding is deliberately unsuppressed,
+          # and failed on it. Excluding it is what actually isolates this test.
+          args: "--exclude '**/gate/blocking.js'"
       - name: The finding must still be reported, just not blocking
         run: |
           set -euo pipefail
