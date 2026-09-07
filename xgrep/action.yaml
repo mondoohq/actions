@@ -102,6 +102,24 @@ runs:
         args+=("$INPUT_PATH")
         echo "Running: xgrep ${args[*]}"
         xgrep "${args[@]}"
+
+        # A scan that produced no report did not run, whatever it exited with.
+        #
+        # `xgrep ci` is diff-aware and needs git history, so a shallow checkout
+        # makes it fail with
+        #
+        #   error: --baseline-commit "origin/main": could not compute git diff
+        #
+        # and exit 0. Without this check the action reports success, the gate below
+        # finds no file and skips itself, and a job with `fail-on: error` goes green
+        # having scanned nothing. A security gate that passes when the scan did not
+        # happen is worse than no gate, because it is believed.
+        if [ ! -f "$INPUT_OUTPUT_FILE" ]; then
+          echo "::error::xgrep produced no report at '$INPUT_OUTPUT_FILE'. The scan did not complete."
+          echo "If the log above mentions a git diff or baseline commit, the checkout is shallow;"
+          echo "'xgrep ci' is diff-aware, so the workflow needs actions/checkout with fetch-depth: 0."
+          exit 1
+        fi
     - name: Gate on findings
       if: ${{ inputs.fail-on != 'off' }}
       shell: bash
@@ -110,9 +128,12 @@ runs:
         INPUT_OUTPUT_FILE: ${{ inputs.output-file }}
       run: |
         set -euo pipefail
+        # Belt and braces with the check at the end of the scan step. This one used
+        # to warn and exit 0, which meant any failure to produce a report silently
+        # turned the gate off -- the one circumstance in which it most needs to speak.
         if [ ! -f "$INPUT_OUTPUT_FILE" ]; then
-          echo "::warning::SARIF file '$INPUT_OUTPUT_FILE' not found; skipping gate"
-          exit 0
+          echo "::error::SARIF file '$INPUT_OUTPUT_FILE' not found, so there is nothing to gate on."
+          exit 1
         fi
         if [ "$INPUT_FAIL_ON" = "error" ]; then
           at_level='select(.level == "error")'

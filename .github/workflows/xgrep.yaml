@@ -39,6 +39,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # `xgrep ci` is diff-aware and needs history to resolve its baseline.
+          fetch-depth: 0
       - name: Scan a fixture with one active error-level finding
         id: scan
         continue-on-error: true
@@ -62,6 +65,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # `xgrep ci` is diff-aware and needs history to resolve its baseline.
+          fetch-depth: 0
       # No continue-on-error: this step passing IS the assertion. The fixture holds
       # the same error-level finding as the job above, suppressed with a `nogrep:`
       # comment, so a gate that counts suppressed findings fails here.
@@ -89,6 +95,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # `xgrep ci` is diff-aware and needs history to resolve its baseline.
+          fetch-depth: 0
       # A quoted glob is the natural way to write this, and it used to reach xgrep
       # with the apostrophes attached, matching nothing and excluding nothing.
       - name: Scan with a quoted --exclude covering the whole target
@@ -105,5 +114,39 @@ jobs:
           if [ "$n" -ne 0 ]; then
             echo "::error::a quoted --exclude pattern did not apply; $n finding(s) reported"
             jq -r '.runs[].results[]? | .ruleId' quoted.sarif
+            exit 1
+          fi
+
+  scan-failure-is-not-a-pass:
+    name: A scan that produces no report fails
+    runs-on: ubuntu-latest
+    steps:
+      # Deliberately shallow: no fetch-depth. `xgrep ci` is diff-aware, cannot
+      # resolve its baseline without history, and exits 0 after printing an error
+      # without writing a report. The action must not call that a pass.
+      #
+      # This is the shape that makes a security gate dangerous rather than merely
+      # broken: before this was fixed, the scan step reported success, the gate
+      # found no file and skipped itself, and a job asking for `fail-on: error`
+      # went green having scanned nothing at all.
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - name: Scan with a checkout xgrep ci cannot baseline
+        id: scan
+        continue-on-error: true
+        uses: ./xgrep
+        with:
+          path: ./.github/test_files/xgrep/gate
+          output-file: shallow.sarif
+          fail-on: error
+      - name: The action must have failed, not passed with no report
+        run: |
+          set -euo pipefail
+          echo "action outcome: ${{ steps.scan.outcome }}"
+          if [ "${{ steps.scan.outcome }}" != "failure" ]; then
+            echo "::error::a scan that produced no report was reported as a pass"
+            exit 1
+          fi
+          if [ -f shallow.sarif ]; then
+            echo "::error::expected no report, but shallow.sarif exists"
             exit 1
           fi
