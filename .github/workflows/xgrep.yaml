@@ -82,11 +82,24 @@ jobs:
           set -euo pipefail
           total=$(jq '[.runs[].results[]?] | length' suppressed.sarif)
           supp=$(jq '[.runs[].results[]? | select((.suppressions // []) | length > 0)] | length' suppressed.sarif)
-          echo "results: $total total, $supp suppressed"
-          # Suppression marks a finding, it does not delete it — the SARIF still
-          # carries it so code scanning can show it as dismissed.
-          if [ "$total" -ne 1 ] || [ "$supp" -ne 1 ]; then
-            echo "::error::expected exactly one suppressed result, got $total total / $supp suppressed"
+          active=$(jq '[.runs[].results[]? | select(.level == "error")
+            | select((.suppressions // []) | length == 0)] | length' suppressed.sarif)
+          echo "results: $total total, $supp suppressed, $active active error-level"
+
+          # Assert the property, not a count. The action installs xgrep `latest`, so
+          # how many rules match this fixture changes over time and a hard-coded
+          # number turns an unrelated rule addition into a failing test.
+          #
+          # Suppression marks a finding rather than deleting it, so the SARIF must
+          # still carry it — that is what lets code scanning show it as dismissed.
+          if [ "$supp" -lt 1 ]; then
+            echo "::error::the suppressed finding is missing from the SARIF entirely"
+            exit 1
+          fi
+          if [ "$active" -ne 0 ]; then
+            echo "::error::$active error-level finding(s) were not suppressed"
+            jq -r '.runs[].results[]? | select(.level == "error")
+              | select((.suppressions // []) | length == 0) | "  \(.ruleId)"' suppressed.sarif
             exit 1
           fi
 
