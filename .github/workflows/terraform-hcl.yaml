@@ -3,12 +3,12 @@ on:
   pull_request:
     paths:
       - "terraform-hcl/**"
-      - ".github/test_files/**"
+      - ".github/test_files/tf/**"
       - ".github/workflows/terraform-hcl.yaml"
   push:
     paths:
       - "terraform-hcl/**"
-      - ".github/test_files/**"
+      - ".github/test_files/tf/**"
       - ".github/workflows/terraform-hcl.yaml"
     branches:
       - "main"
