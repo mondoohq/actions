@@ -3,12 +3,10 @@ on:
   pull_request:
     paths:
       - "action.yaml"
-      - ".github/test_files/**"
       - ".github/workflows/general-action.yaml"
   push:
     paths:
       - "action.yaml"
-      - ".github/test_files/**"
       - ".github/workflows/general-action.yaml"
     branches:
       - "main"

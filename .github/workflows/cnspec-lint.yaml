@@ -4,12 +4,12 @@ on:
   pull_request:
     paths:
       - "cnspec-lint/**"
-      - ".github/test_files/**"
+      - ".github/test_files/cnspec-lint/**"
       - ".github/workflows/cnspec-lint.yaml"
   push:
     paths:
       - "cnspec-lint/**"
-      - ".github/test_files/**"
+      - ".github/test_files/cnspec-lint/**"
       - ".github/workflows/cnspec-lint.yaml"
     branches:
       - main

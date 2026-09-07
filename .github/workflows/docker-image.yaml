@@ -3,12 +3,12 @@ on:
   pull_request:
     paths:
       - "docker-image/**"
-      - ".github/test_files/**"
+      - ".github/test_files/Dockerfile"
       - ".github/workflows/docker-image.yaml"
   push:
     paths:
       - "docker-image/**"
-      - ".github/test_files/**"
+      - ".github/test_files/Dockerfile"
       - ".github/workflows/docker-image.yaml"
     branches:
       - "main"

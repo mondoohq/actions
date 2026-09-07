@@ -3,12 +3,12 @@ on:
   pull_request:
     paths:
       - "terraform-state/**"
-      - ".github/test_files/**"
+      - ".github/test_files/tfstate/**"
       - ".github/workflows/terraform-state.yaml"
   push:
     paths:
       - "terraform-state/**"
-      - ".github/test_files/**"
+      - ".github/test_files/tfstate/**"
       - ".github/workflows/terraform-state.yaml"
     branches:
       - "main"
