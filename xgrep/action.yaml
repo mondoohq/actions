@@ -70,12 +70,56 @@ runs:
           fi
         fi
         if [ -n "$INPUT_ARGS" ]; then
-          read -ra extra <<<"$INPUT_ARGS"
-          args+=("${extra[@]}")
+          # Split with shell quoting rules, but without a shell.
+          #
+          # `read -ra` split on whitespace and left quotes attached, so the natural
+          # way to write a glob --
+          #
+          #     args: "--exclude 'src/demo/**'"
+          #
+          # -- reached xgrep as the pattern `'src/demo/**'`, apostrophes included,
+          # and matched nothing. Nothing warned: the scan succeeded and the
+          # exclusion silently did nothing.
+          #
+          # xargs applies the quoting rules a shell would and performs none of the
+          # expansions one would. `$(...)` in this input stays a literal string
+          # rather than running, which `eval` could not promise -- and `args` is
+          # the kind of input a workflow may well build from a variable.
+          #
+          # NUL-delimited so an intentionally empty argument survives.
+          args_file="${RUNNER_TEMP:-/tmp}/xgrep-args.bin"
+          if ! printf '%s' "$INPUT_ARGS" \
+            | xargs -n1 printf '%s\0' > "$args_file" 2> "$args_file.err"; then
+            echo "::error::Could not parse the 'args' input: $(cat "$args_file.err")"
+            echo "  args: $INPUT_ARGS"
+            exit 1
+          fi
+          while IFS= read -r -d '' token; do
+            args+=("$token")
+          done < "$args_file"
+          rm -f "$args_file" "$args_file.err"
         fi
         args+=("$INPUT_PATH")
         echo "Running: xgrep ${args[*]}"
         xgrep "${args[@]}"
+
+        # A scan that produced no report did not run, whatever it exited with.
+        #
+        # `xgrep ci` is diff-aware and needs git history, so a shallow checkout
+        # makes it fail with
+        #
+        #   error: --baseline-commit "origin/main": could not compute git diff
+        #
+        # and exit 0. Without this check the action reports success, the gate below
+        # finds no file and skips itself, and a job with `fail-on: error` goes green
+        # having scanned nothing. A security gate that passes when the scan did not
+        # happen is worse than no gate, because it is believed.
+        if [ ! -f "$INPUT_OUTPUT_FILE" ]; then
+          echo "::error::xgrep produced no report at '$INPUT_OUTPUT_FILE'. The scan did not complete."
+          echo "If the log above mentions a git diff or baseline commit, the checkout is shallow;"
+          echo "'xgrep ci' is diff-aware, so the workflow needs actions/checkout with fetch-depth: 0."
+          exit 1
+        fi
     - name: Gate on findings
       if: ${{ inputs.fail-on != 'off' }}
       shell: bash
@@ -84,17 +128,42 @@ runs:
         INPUT_OUTPUT_FILE: ${{ inputs.output-file }}
       run: |
         set -euo pipefail
+        # Belt and braces with the check at the end of the scan step. This one used
+        # to warn and exit 0, which meant any failure to produce a report silently
+        # turned the gate off -- the one circumstance in which it most needs to speak.
         if [ ! -f "$INPUT_OUTPUT_FILE" ]; then
-          echo "::warning::SARIF file '$INPUT_OUTPUT_FILE' not found; skipping gate"
-          exit 0
+          echo "::error::SARIF file '$INPUT_OUTPUT_FILE' not found, so there is nothing to gate on."
+          exit 1
         fi
         if [ "$INPUT_FAIL_ON" = "error" ]; then
-          count=$(jq '[.runs[].results[]? | select(.level == "error")] | length' "$INPUT_OUTPUT_FILE")
+          at_level='select(.level == "error")'
         else
-          count=$(jq '[.runs[].results[]? | select(.level == "error" or .level == "warning")] | length' "$INPUT_OUTPUT_FILE")
+          at_level='select(.level == "error" or .level == "warning")'
         fi
-        echo "Findings at or above '$INPUT_FAIL_ON': $count"
+
+        # Findings the scan has already marked suppressed do not gate. An inline
+        # `nogrep:` comment is how a triaged false positive is meant to be recorded,
+        # and counting suppressed findings here would leave `fail-on` with no escape
+        # hatch at all: one unfixable false positive would fail every run forever.
+        #
+        # `suppressions` is SARIF's own field for this (§3.27.23) and GitHub code
+        # scanning already honours it -- without this filter the alert reads as
+        # dismissed there while the build fails on it, which is a confusing pair of
+        # answers for one finding.
+        unsuppressed='select((.suppressions // []) | length == 0)'
+
+        total=$(jq "[.runs[].results[]?] | length" "$INPUT_OUTPUT_FILE")
+        count=$(jq "[.runs[].results[]? | $at_level | $unsuppressed] | length" "$INPUT_OUTPUT_FILE")
+        suppressed=$(jq "[.runs[].results[]? | $at_level | select((.suppressions // []) | length > 0)] | length" "$INPUT_OUTPUT_FILE")
+
+        echo "Findings: $total total, $suppressed suppressed at or above '$INPUT_FAIL_ON', $count blocking"
+
         if [ "$count" -gt 0 ]; then
-          echo "::error::xgrep found $count finding(s) at or above severity '$INPUT_FAIL_ON'"
+          # Name them. "1 finding" with no rule or path sends the reader to the
+          # SARIF to discover what failed their build.
+          jq -r ".runs[].results[]? | $at_level | $unsuppressed
+            | \"  \(.ruleId): \(.locations[0].physicalLocation.artifactLocation.uri // \"?\"):\(.locations[0].physicalLocation.region.startLine // 0)\"" \
+            "$INPUT_OUTPUT_FILE"
+          echo "::error::xgrep found $count unsuppressed finding(s) at or above severity '$INPUT_FAIL_ON'"
           exit 1
         fi

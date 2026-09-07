@@ -66,6 +66,11 @@ jobs:
           category: xgrep
 ```
 
+> **`path` does not narrow the scan.** The action runs `xgrep ci`, which is
+> diff-aware: it analyses the files a pull request changed, whatever path it is
+> given. `xgrep ci a/one.js` will still report findings in `b/two.js` if that file
+> also changed. Use `args: "--exclude '<glob>'"` to keep a scan off a subtree.
+
 ## Fail the build on findings
 
 By default the action only reports findings to code scanning. To make the job fail when findings are present, set `fail-on`:
@@ -76,6 +81,32 @@ By default the action only reports findings to code scanning. To make the job fa
   with:
     fail-on: error # or 'warning'
 ```
+
+Findings suppressed inline do not fail the build. When a finding has been triaged
+and judged not to apply, record that at the line with a `nogrep:` comment carrying
+the reason:
+
+```js
+// the id is read from a signed token, never from the request nogrep: js-express-xss
+res.send(renderUser(req.user.id));
+```
+
+The finding is still reported — it appears in the SARIF and shows in code scanning
+as dismissed — it simply does not gate. That is what makes `fail-on` usable: without
+it, a single unfixable false positive would fail every run.
+
+## Passing extra flags
+
+`args` is split with shell quoting rules, so a pattern containing globs or spaces
+can be quoted the way it would be in a shell:
+
+```yaml
+with:
+  args: "--exclude 'src/main/resources/demo/**' --decode"
+```
+
+Quoting is honoured but nothing is expanded — `$(...)`, backticks and variables in
+this input are passed through as literal text rather than evaluated.
 
 ## Join the community!
 

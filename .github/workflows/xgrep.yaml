@@ -12,6 +12,7 @@ on:
 
 jobs:
   build:
+    name: Scan and report
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -28,3 +29,144 @@ jobs:
         with:
           name: xgrep-report
           path: custom-results.sarif
+
+  # The three jobs below cover what the scan job cannot: the scan runs with
+  # fail-on off, so nothing there exercises the gate, and its fixtures produce
+  # only info-level findings, which no fail-on setting reacts to.
+
+  gate-blocks:
+    name: Gate fails on an unsuppressed finding
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # `xgrep ci` is diff-aware and needs history to resolve its baseline.
+          fetch-depth: 0
+      - name: Scan a fixture with one active error-level finding
+        id: scan
+        continue-on-error: true
+        uses: ./xgrep
+        with:
+          path: ./.github/test_files/xgrep/gate/blocking.js
+          output-file: blocking.sarif
+          fail-on: error
+      - name: The gate must have failed
+        run: |
+          set -euo pipefail
+          echo "action outcome: ${{ steps.scan.outcome }}"
+          if [ "${{ steps.scan.outcome }}" != "failure" ]; then
+            echo "::error::fail-on=error did not fail on an active error-level finding"
+            jq '.runs[].results[]?' blocking.sarif || true
+            exit 1
+          fi
+
+  gate-honours-suppression:
+    name: Gate ignores a suppressed finding
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # `xgrep ci` is diff-aware and needs history to resolve its baseline.
+          fetch-depth: 0
+      # No continue-on-error: this step passing IS the assertion. The fixture holds
+      # the same error-level finding as the job above, suppressed with a `nogrep:`
+      # comment, so a gate that counts suppressed findings fails here.
+      - name: Scan a fixture whose only finding is suppressed
+        uses: ./xgrep
+        with:
+          path: ./.github/test_files/xgrep/gate/suppressed.js
+          output-file: suppressed.sarif
+          fail-on: error
+          # `path` does not scope the scan. The action runs `xgrep ci`, which is
+          # diff-aware and analyses the files a pull request changed regardless of
+          # the path it is handed -- verified: `xgrep ci a/one.js` also reports
+          # findings in `b/two.js`, where `xgrep scan a/one.js` does not. So this
+          # job saw the sibling fixture, whose finding is deliberately unsuppressed,
+          # and failed on it. Excluding it is what actually isolates this test.
+          args: "--exclude '**/gate/blocking.js'"
+      - name: The finding must still be reported, just not blocking
+        run: |
+          set -euo pipefail
+          total=$(jq '[.runs[].results[]?] | length' suppressed.sarif)
+          supp=$(jq '[.runs[].results[]? | select((.suppressions // []) | length > 0)] | length' suppressed.sarif)
+          active=$(jq '[.runs[].results[]? | select(.level == "error")
+            | select((.suppressions // []) | length == 0)] | length' suppressed.sarif)
+          echo "results: $total total, $supp suppressed, $active active error-level"
+
+          # Assert the property, not a count. The action installs xgrep `latest`, so
+          # how many rules match this fixture changes over time and a hard-coded
+          # number turns an unrelated rule addition into a failing test.
+          #
+          # Suppression marks a finding rather than deleting it, so the SARIF must
+          # still carry it — that is what lets code scanning show it as dismissed.
+          if [ "$supp" -lt 1 ]; then
+            echo "::error::the suppressed finding is missing from the SARIF entirely"
+            exit 1
+          fi
+          if [ "$active" -ne 0 ]; then
+            echo "::error::$active error-level finding(s) were not suppressed"
+            jq -r '.runs[].results[]? | select(.level == "error")
+              | select((.suppressions // []) | length == 0) | "  \(.ruleId)"' suppressed.sarif
+            exit 1
+          fi
+
+  args-quoting:
+    name: args honours shell quoting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # `xgrep ci` is diff-aware and needs history to resolve its baseline.
+          fetch-depth: 0
+      # A quoted glob is the natural way to write this, and it used to reach xgrep
+      # with the apostrophes attached, matching nothing and excluding nothing.
+      - name: Scan with a quoted --exclude covering the whole target
+        uses: ./xgrep
+        with:
+          path: ./.github/test_files/xgrep/gate
+          output-file: quoted.sarif
+          args: "--exclude '**/gate/**'"
+      - name: The exclusion must have applied
+        run: |
+          set -euo pipefail
+          n=$(jq '[.runs[].results[]?] | length' quoted.sarif)
+          echo "results with the quoted exclusion: $n (the same scan unexcluded gives 2)"
+          if [ "$n" -ne 0 ]; then
+            echo "::error::a quoted --exclude pattern did not apply; $n finding(s) reported"
+            jq -r '.runs[].results[]? | .ruleId' quoted.sarif
+            exit 1
+          fi
+
+  scan-failure-is-not-a-pass:
+    name: A scan that produces no report fails
+    runs-on: ubuntu-latest
+    steps:
+      # Deliberately shallow: no fetch-depth. `xgrep ci` is diff-aware, cannot
+      # resolve its baseline without history, and exits 0 after printing an error
+      # without writing a report. The action must not call that a pass.
+      #
+      # This is the shape that makes a security gate dangerous rather than merely
+      # broken: before this was fixed, the scan step reported success, the gate
+      # found no file and skipped itself, and a job asking for `fail-on: error`
+      # went green having scanned nothing at all.
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - name: Scan with a checkout xgrep ci cannot baseline
+        id: scan
+        continue-on-error: true
+        uses: ./xgrep
+        with:
+          path: ./.github/test_files/xgrep/gate
+          output-file: shallow.sarif
+          fail-on: error
+      - name: The action must have failed, not passed with no report
+        run: |
+          set -euo pipefail
+          echo "action outcome: ${{ steps.scan.outcome }}"
+          if [ "${{ steps.scan.outcome }}" != "failure" ]; then
+            echo "::error::a scan that produced no report was reported as a pass"
+            exit 1
+          fi
+          if [ -f shallow.sarif ]; then
+            echo "::error::expected no report, but shallow.sarif exists"
+            exit 1
+          fi
