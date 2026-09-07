@@ -179,7 +179,7 @@ jobs:
         run: |
           set -euo pipefail
           n=$(jq '[.runs[].results[]?] | length' quoted.sarif)
-          echo "results with the quoted exclusion: $n (the same scan unexcluded gives 2)"
+          echo "results with the quoted exclusion: $n (without it, the staged fixture gives 1)"
           if [ "$n" -ne 0 ]; then
             echo "::error::a quoted --exclude pattern did not apply; $n finding(s) reported"
             jq -r '.runs[].results[]? | .ruleId' quoted.sarif
