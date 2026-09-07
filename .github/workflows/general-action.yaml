@@ -23,16 +23,11 @@ jobs:
         uses: ./
         with:
           args: status
-          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
       - name: Show status
         uses: ./
-        env:
-          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
           args: status
       - name: Show version
         uses: ./
-        env:
-          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
           args: version

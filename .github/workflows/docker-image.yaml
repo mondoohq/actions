@@ -39,4 +39,3 @@ jobs:
         uses: ./docker-image
         with:
           image: ${{env.APP}}:${{env.VERSION}}
-          service-account-credentials: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}

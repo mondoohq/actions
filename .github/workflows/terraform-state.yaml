@@ -51,7 +51,5 @@ jobs:
             .github/test_files/tfstate/state.json
       - name: Scan Terraform State
         uses: ./terraform-state
-        env:
-          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
         with:
           path: ".github/test_files/tfstate/state.json"
