@@ -77,6 +77,32 @@ By default the action only reports findings to code scanning. To make the job fa
     fail-on: error # or 'warning'
 ```
 
+Findings suppressed inline do not fail the build. When a finding has been triaged
+and judged not to apply, record that at the line with a `nogrep:` comment carrying
+the reason:
+
+```js
+// the id is read from a signed token, never from the request nogrep: js-express-xss
+res.send(renderUser(req.user.id));
+```
+
+The finding is still reported — it appears in the SARIF and shows in code scanning
+as dismissed — it simply does not gate. That is what makes `fail-on` usable: without
+it, a single unfixable false positive would fail every run.
+
+## Passing extra flags
+
+`args` is split with shell quoting rules, so a pattern containing globs or spaces
+can be quoted the way it would be in a shell:
+
+```yaml
+with:
+  args: "--exclude 'src/main/resources/demo/**' --decode"
+```
+
+Quoting is honoured but nothing is expanded — `$(...)`, backticks and variables in
+this input are passed through as literal text rather than evaluated.
+
 ## Join the community!
 
 Join the [Mondoo Community GitHub Discussions](https://github.com/orgs/mondoohq/discussions) to collaborate on policy as code and security automation.
