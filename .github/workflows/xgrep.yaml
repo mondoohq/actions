@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
       - name: Run xgrep
@@ -38,7 +38,7 @@ jobs:
     name: Gate fails on an unsuppressed finding
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # `xgrep ci` is diff-aware and needs history to resolve its baseline.
           fetch-depth: 0
@@ -81,7 +81,7 @@ jobs:
     name: Gate ignores a suppressed finding
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # `xgrep ci` is diff-aware and needs history to resolve its baseline.
           fetch-depth: 0
@@ -141,7 +141,7 @@ jobs:
     name: args honours shell quoting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # `xgrep ci` is diff-aware and needs history to resolve its baseline.
           fetch-depth: 0
@@ -198,7 +198,7 @@ jobs:
       # broken: before this was fixed, the scan step reported success, the gate
       # found no file and skipped itself, and a job asking for `fail-on: error`
       # went green having scanned nothing at all.
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Scan with a checkout xgrep ci cannot baseline
         id: scan
         continue-on-error: true
