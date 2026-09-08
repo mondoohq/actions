@@ -216,23 +216,30 @@ jobs:
         with:
           fetch-depth: 0
 
-      # A target that does not exist. xgrep declines to scan it, writes no report,
-      # and exits 0 -- which is the shape this test exists for: the action must not
-      # call that a pass.
+      # An output path inside a directory that does not exist. The scan may run
+      # perfectly well; it simply cannot write its report there. That is the shape
+      # this test is about -- no report at the path the action was told to use --
+      # and the action must fail rather than call it a pass.
       #
-      # This was originally induced with a shallow checkout, because that is how the
-      # bug was found: `xgrep ci` is diff-aware, could not resolve a baseline without
-      # history, and gave up with exit 0. That only holds on a pull request, though.
-      # On a push there is no base to resolve either way, so the scan ran, wrote a
-      # report, and the test failed on its own premise rather than on the behaviour
-      # it checks. A missing path produces no report on any event.
-      - name: Scan a path that does not exist
+      # Two earlier attempts at inducing this were not robust, and both failed for
+      # the same underlying reason: they assumed the scan would not run.
+      #
+      #   a shallow checkout   `xgrep ci` could not resolve a baseline and gave up
+      #                        with exit 0 -- true on a pull request, false on a
+      #                        push, where there is no base to resolve either way
+      #   a missing target     when a baseline IS resolvable, `xgrep ci` scans the
+      #                        diff rather than the target, so the bogus path is
+      #                        ignored and a report is written anyway
+      #
+      # An unwritable output path depends on none of that: not the event, not the
+      # baseline, not how targets are resolved.
+      - name: Scan with an output path that cannot be written
         id: scan
         continue-on-error: true
         uses: ./xgrep
         with:
-          path: ./.github/test_files/xgrep/no-such-directory
-          output-file: missing.sarif
+          path: .
+          output-file: no-such-directory/missing.sarif
           fail-on: error
 
       - name: The action must have failed, not passed with no report
@@ -243,7 +250,7 @@ jobs:
             echo "::error::a scan that produced no report was reported as a pass"
             exit 1
           fi
-          if [ -f missing.sarif ]; then
-            echo "::error::expected no report, but missing.sarif exists"
+          if [ -f no-such-directory/missing.sarif ]; then
+            echo "::error::expected no report, but one was written"
             exit 1
           fi
