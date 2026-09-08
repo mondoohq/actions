@@ -212,23 +212,29 @@ jobs:
     name: A scan that produces no report fails
     runs-on: ubuntu-latest
     steps:
-      # Deliberately shallow: no fetch-depth. `xgrep ci` is diff-aware, cannot
-      # resolve its baseline without history, and exits 0 after printing an error
-      # without writing a report. The action must not call that a pass.
-      #
-      # This is the shape that makes a security gate dangerous rather than merely
-      # broken: before this was fixed, the scan step reported success, the gate
-      # found no file and skipped itself, and a job asking for `fail-on: error`
-      # went green having scanned nothing at all.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Scan with a checkout xgrep ci cannot baseline
+        with:
+          fetch-depth: 0
+
+      # A target that does not exist. xgrep declines to scan it, writes no report,
+      # and exits 0 -- which is the shape this test exists for: the action must not
+      # call that a pass.
+      #
+      # This was originally induced with a shallow checkout, because that is how the
+      # bug was found: `xgrep ci` is diff-aware, could not resolve a baseline without
+      # history, and gave up with exit 0. That only holds on a pull request, though.
+      # On a push there is no base to resolve either way, so the scan ran, wrote a
+      # report, and the test failed on its own premise rather than on the behaviour
+      # it checks. A missing path produces no report on any event.
+      - name: Scan a path that does not exist
         id: scan
         continue-on-error: true
         uses: ./xgrep
         with:
-          path: ./.github/test_files/xgrep/gate
-          output-file: shallow.sarif
+          path: ./.github/test_files/xgrep/no-such-directory
+          output-file: missing.sarif
           fail-on: error
+
       - name: The action must have failed, not passed with no report
         run: |
           set -euo pipefail
@@ -237,7 +243,7 @@ jobs:
             echo "::error::a scan that produced no report was reported as a pass"
             exit 1
           fi
-          if [ -f shallow.sarif ]; then
-            echo "::error::expected no report, but shallow.sarif exists"
+          if [ -f missing.sarif ]; then
+            echo "::error::expected no report, but missing.sarif exists"
             exit 1
           fi
