@@ -67,6 +67,17 @@ jobs:
           path: .
           output-file: blocking.sarif
           fail-on: error
+          # HEAD~1 is the tree as it was before the step above staged the fixture,
+          # so the scan sees that file and nothing else.
+          #
+          # Not the hardcoded baseline this once had: it is relative, carries no
+          # knowledge of any particular repository, and the step immediately above
+          # is what makes it true. It is needed because `xgrep ci` resolves its own
+          # baseline from the event, and on a push to main there is no pull request
+          # base to resolve -- so the scan widened to the whole tree and picked up
+          # the Terraform and sibling fixtures. These jobs passed on every pull
+          # request and failed on every push until this was added.
+          args: "--baseline-commit HEAD~1"
       - name: The gate must have failed
         run: |
           set -euo pipefail
@@ -111,6 +122,17 @@ jobs:
           path: .
           output-file: suppressed.sarif
           fail-on: error
+          # HEAD~1 is the tree as it was before the step above staged the fixture,
+          # so the scan sees that file and nothing else.
+          #
+          # Not the hardcoded baseline this once had: it is relative, carries no
+          # knowledge of any particular repository, and the step immediately above
+          # is what makes it true. It is needed because `xgrep ci` resolves its own
+          # baseline from the event, and on a push to main there is no pull request
+          # base to resolve -- so the scan widened to the whole tree and picked up
+          # the Terraform and sibling fixtures. These jobs passed on every pull
+          # request and failed on every push until this was added.
+          args: "--baseline-commit HEAD~1"
       - name: The finding must still be reported, just not blocking
         run: |
           set -euo pipefail
@@ -174,7 +196,7 @@ jobs:
           # worked -- passing for the wrong reason, and unable to catch the bug it
           # exists for. Measured on a staged fixture: quotes stripped gives 0,
           # quotes left attached gives 1.
-          args: "--exclude 'under-test.js'"
+          args: "--baseline-commit HEAD~1 --exclude 'under-test.js'"
       - name: The exclusion must have applied
         run: |
           set -euo pipefail
