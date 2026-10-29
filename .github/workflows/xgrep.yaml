@@ -77,7 +77,12 @@ jobs:
           # base to resolve -- so the scan widened to the whole tree and picked up
           # the Terraform and sibling fixtures. These jobs passed on every pull
           # request and failed on every push until this was added.
-          args: "--baseline-commit HEAD~1"
+          #
+          # --sarif-include-suppressed: xgrep >= 0.84.0 omits inline-suppressed
+          # findings from the SARIF by default, because GitHub code scanning ignores
+          # `result.suppressions` and would import them as open alerts. This test
+          # opts back in so the gate's suppression handling is actually exercised.
+          args: "--baseline-commit HEAD~1 --sarif-include-suppressed"
       - name: The gate must have failed
         run: |
           set -euo pipefail
@@ -146,8 +151,9 @@ jobs:
           # how many rules match this fixture changes over time and a hard-coded
           # number turns an unrelated rule addition into a failing test.
           #
-          # Suppression marks a finding rather than deleting it, so the SARIF must
-          # still carry it — that is what lets code scanning show it as dismissed.
+          # The scan opts in to suppressed results (--sarif-include-suppressed), so
+          # the SARIF carries the finding and we can assert it was matched and marked
+          # suppressed rather than dropped.
           if [ "$supp" -lt 1 ]; then
             echo "::error::the suppressed finding is missing from the SARIF entirely"
             exit 1
