@@ -19,9 +19,8 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: echo "MONDOO_CONFIG_BASE64=${{ inputs.service-account-credentials }}" >> $GITHUB_ENV
-      if: env.MONDOO_CONFIG_BASE64 == ''
-      shell: bash
     - uses: "docker://mondoo/cnspec:14"
+      env:
+        MONDOO_CONFIG_BASE64: ${{ inputs.service-account-credentials || env.MONDOO_CONFIG_BASE64 }}
       with:
         args: ${{ inputs.args }} --log-level "${{ inputs.log-level }}"
