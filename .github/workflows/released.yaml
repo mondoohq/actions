@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to write into the READMEs (e.g. v13.2.0)"
+        description: "Version to write into the READMEs (e.g. v14.0.0)"
         required: true
-        default: "v13.2.0"
+        default: "v14.0.0"
 
 # main is protected and requires changes to land via a pull request, so this
 # workflow opens a PR instead of pushing to main directly.

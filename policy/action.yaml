@@ -17,7 +17,7 @@ inputs:
     required: false
 runs:
   using: "docker"
-  image: "docker://mondoo/cnspec:13"
+  image: "docker://mondoo/cnspec:14"
   args:
     - bundle
     - upload
