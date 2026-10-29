@@ -146,10 +146,12 @@ runs:
         # and counting suppressed findings here would leave `fail-on` with no escape
         # hatch at all: one unfixable false positive would fail every run forever.
         #
-        # `suppressions` is SARIF's own field for this (§3.27.23) and GitHub code
-        # scanning already honours it -- without this filter the alert reads as
-        # dismissed there while the build fails on it, which is a confusing pair of
-        # answers for one finding.
+        # `suppressions` is SARIF's own field for this (§3.27.23). Since 0.84.0,
+        # xgrep leaves suppressed findings out of the SARIF by default, because
+        # GitHub code scanning ignores the field and would import them as open
+        # alerts. So this filter only matters when they are included -- with
+        # `--sarif-include-suppressed` in `args`, or an older pinned `version` --
+        # and then a finding the scan marked suppressed must not fail the build.
         unsuppressed='select((.suppressions // []) | length == 0)'
 
         total=$(jq "[.runs[].results[]?] | length" "$INPUT_OUTPUT_FILE")
